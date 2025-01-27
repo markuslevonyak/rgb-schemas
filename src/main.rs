@@ -27,11 +27,13 @@ use rgbstd::contract::IssuerWrapper;
 use rgbstd::persistence::MemContract;
 use rgbstd::vm::RgbIsa;
 use schemata::{
-    CollectibleFungibleAsset, NonInflatableAsset, PermissionedFungibleAsset, UniqueDigitalAsset,
+    CollectibleFungibleAsset, InflatableFungibleAsset, NonInflatableAsset,
+    PermissionedFungibleAsset, UniqueDigitalAsset,
 };
 
 fn main() -> io::Result<()> {
     cfa()?;
+    ifa()?;
     nia()?;
     pfa()?;
     uda()?;
@@ -102,6 +104,23 @@ fn cfa() -> io::Result<()> {
 
     kit.save_file("schemata/CollectibleFungibleAsset.rgb")?;
     kit.save_armored("schemata/CollectibleFungibleAsset.rgba")?;
+    print_lib(&kit);
+
+    Ok(())
+}
+
+fn ifa() -> io::Result<()> {
+    let schema = InflatableFungibleAsset::schema();
+    let lib = InflatableFungibleAsset::scripts();
+    let types = InflatableFungibleAsset::types();
+
+    let mut kit = Kit::default();
+    kit.schemata.push(schema).unwrap();
+    kit.scripts.extend(lib.into_values()).unwrap();
+    kit.types = types;
+
+    kit.save_file("schemata/InflatableFungibleAsset.rgb")?;
+    kit.save_armored("schemata/InflatableFungibleAsset.rgba")?;
     print_lib(&kit);
 
     Ok(())
