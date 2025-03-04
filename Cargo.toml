@@ -41,3 +41,8 @@ default = []
 all = ["log", "fs"]
 log = ["aluvm/log"]
 fs = ["rgb-std/fs"]
+
+[patch.crates-io]
+rgb-core = { git = "https://github.com/zoedberg/rgb-core", branch = "0.11.1-2" }
+rgb-std = { git = "https://github.com/zoedberg/rgb-std", branch = "0.11.1-2" }
+rgb-interfaces = { git = "https://github.com/zoedberg/rgb-interfaces", branch = "0.11.1-2" }

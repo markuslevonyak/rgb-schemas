@@ -69,7 +69,6 @@ pub fn cfa_schema() -> Schema {
         owned_types: tiny_bmap! {
             OS_ASSET => OwnedStateSchema::Fungible(FungibleType::Unsigned64Bit),
         },
-        valency_types: none!(),
         genesis: GenesisSchema {
             metadata: none!(),
             globals: tiny_bmap! {
@@ -83,10 +82,8 @@ pub fn cfa_schema() -> Schema {
             assignments: tiny_bmap! {
                 OS_ASSET => Occurrences::OnceOrMore,
             },
-            valencies: none!(),
             validator: Some(LibSite::with(FN_NIA_GENESIS_OFFSET, nia_id)),
         },
-        extensions: none!(),
         transitions: tiny_bmap! {
             TS_TRANSFER => TransitionSchema {
                 metadata: none!(),
@@ -97,7 +94,6 @@ pub fn cfa_schema() -> Schema {
                 assignments: tiny_bmap! {
                     OS_ASSET => Occurrences::OnceOrMore
                 },
-                valencies: none!(),
                 validator: Some(LibSite::with(FN_NIA_TRANSFER_OFFSET, nia_id))
             }
         },
@@ -126,11 +122,9 @@ pub fn cfa_rgb25() -> IfaceImpl {
         assignments: tiny_bset! {
             NamedField::with(OS_ASSET, fname!("assetOwner")),
         },
-        valencies: none!(),
         transitions: tiny_bset! {
             NamedField::with(TS_TRANSFER, fname!("transfer")),
         },
-        extensions: none!(),
         errors: tiny_bset![
             NamedVariant::with(ERRNO_ISSUED_MISMATCH, vname!("issuedMismatch")),
             NamedVariant::with(ERRNO_NON_EQUAL_IN_OUT, vname!("nonEqualAmounts")),

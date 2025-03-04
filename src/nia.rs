@@ -104,7 +104,6 @@ fn nia_schema() -> Schema {
         owned_types: tiny_bmap! {
             OS_ASSET => OwnedStateSchema::Fungible(FungibleType::Unsigned64Bit),
         },
-        valency_types: none!(),
         genesis: GenesisSchema {
             metadata: none!(),
             globals: tiny_bmap! {
@@ -115,10 +114,8 @@ fn nia_schema() -> Schema {
             assignments: tiny_bmap! {
                 OS_ASSET => Occurrences::OnceOrMore,
             },
-            valencies: none!(),
             validator: Some(LibSite::with(FN_NIA_GENESIS_OFFSET, alu_id)),
         },
-        extensions: none!(),
         transitions: tiny_bmap! {
             TS_TRANSFER => TransitionSchema {
             metadata: none!(),
@@ -129,7 +126,6 @@ fn nia_schema() -> Schema {
                 assignments: tiny_bmap! {
                     OS_ASSET => Occurrences::OnceOrMore
                 },
-                valencies: none!(),
                 validator: Some(LibSite::with(FN_NIA_TRANSFER_OFFSET, alu_id))
             }
         },
@@ -156,11 +152,9 @@ fn nia_rgb20() -> IfaceImpl {
         assignments: tiny_bset! {
             NamedField::with(OS_ASSET, fname!("assetOwner")),
         },
-        valencies: none!(),
         transitions: tiny_bset! {
             NamedField::with(TS_TRANSFER, fname!("transfer")),
         },
-        extensions: none!(),
         errors: tiny_bset![
             NamedVariant::with(ERRNO_ISSUED_MISMATCH, vname!("issuedMismatch")),
             NamedVariant::with(ERRNO_NON_EQUAL_IN_OUT, vname!("nonEqualAmounts")),
@@ -274,7 +268,7 @@ mod test {
 
         assert_eq!(
             contract.contract_id().to_string(),
-            s!("rgb:QRmoA2Ly-vpemU23-gVV4oFj-NDtLJzH-BUmHok3-YaABLnQ")
+            s!("rgb:1B5JbWiC-lva4AOb-pBj3SLb-oTIU3ok-VqLsYpx-AfQk!90")
         );
     }
 }

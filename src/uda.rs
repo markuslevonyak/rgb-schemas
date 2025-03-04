@@ -122,7 +122,6 @@ fn uda_schema() -> Schema {
         owned_types: tiny_bmap! {
             OS_ASSET => OwnedStateSchema::Structured(types.get("RGBContract.Allocation")),
         },
-        valency_types: none!(),
         genesis: GenesisSchema {
             metadata: none!(),
             globals: tiny_bmap! {
@@ -134,10 +133,8 @@ fn uda_schema() -> Schema {
             assignments: tiny_bmap! {
                 OS_ASSET => Occurrences::Once,
             },
-            valencies: none!(),
             validator: Some(LibSite::with(FN_GENESIS_OFFSET, alu_id)),
         },
-        extensions: none!(),
         transitions: tiny_bmap! {
             TS_TRANSFER => TransitionSchema {
                 metadata: none!(),
@@ -148,7 +145,6 @@ fn uda_schema() -> Schema {
                 assignments: tiny_bmap! {
                     OS_ASSET => Occurrences::Once
                 },
-                valencies: none!(),
                 validator: Some(LibSite::with(FN_TRANSFER_OFFSET, alu_id)),
             }
         },
@@ -175,11 +171,9 @@ fn uda_rgb21() -> IfaceImpl {
         assignments: tiny_bset! {
             NamedField::with(OS_ASSET, fname!("assetOwner")),
         },
-        valencies: none!(),
         transitions: tiny_bset! {
             NamedField::with(TS_TRANSFER, fname!("transfer")),
         },
-        extensions: none!(),
         errors: tiny_bset! {
             NamedVariant::with(ERRNO_NON_FRACTIONAL, vname!("nonFractionalToken")),
             NamedVariant::with(ERRNO_NON_EQUAL_IN_OUT, vname!("unknownToken")),
