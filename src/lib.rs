@@ -28,20 +28,23 @@ mod cfa;
 mod nia;
 mod uda;
 
-pub use cfa::CollectibleFungibleAsset;
-pub use nia::NonInflatableAsset;
+pub use cfa::{CollectibleFungibleAsset, CFA_SCHEMA_ID};
+pub use nia::{NonInflatableAsset, NIA_SCHEMA_ID};
 use rgbstd::{AssignmentType, GlobalStateType, TransitionType};
-pub use uda::UniqueDigitalAsset;
+pub use uda::{UniqueDigitalAsset, UDA_SCHEMA_ID};
 
-// RGB20
-pub const GS_NOMINAL: GlobalStateType = GlobalStateType::with(2000);
-pub const GS_TERMS: GlobalStateType = GlobalStateType::with(2001);
-pub const GS_ISSUED_SUPPLY: GlobalStateType = GlobalStateType::with(2010);
+pub const LNPBP_IDENTITY: &str = "ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w";
 
-// RGB21
-pub const GS_TOKENS: GlobalStateType = GlobalStateType::with(2102);
-pub const GS_ENGRAVINGS: GlobalStateType = GlobalStateType::with(2103);
+pub const GS_ART: GlobalStateType = GlobalStateType::with(3000);
 pub const GS_ATTACH: GlobalStateType = GlobalStateType::with(2104);
+pub const GS_DETAILS: GlobalStateType = GlobalStateType::with(3004);
+pub const GS_ENGRAVINGS: GlobalStateType = GlobalStateType::with(2103);
+pub const GS_ISSUED_SUPPLY: GlobalStateType = GlobalStateType::with(2010);
+pub const GS_NAME: GlobalStateType = GlobalStateType::with(3001);
+pub const GS_NOMINAL: GlobalStateType = GlobalStateType::with(2000);
+pub const GS_PRECISION: GlobalStateType = GlobalStateType::with(3005);
+pub const GS_TERMS: GlobalStateType = GlobalStateType::with(2001);
+pub const GS_TOKENS: GlobalStateType = GlobalStateType::with(2102);
 
 pub const OS_ASSET: AssignmentType = AssignmentType::with(4000);
 

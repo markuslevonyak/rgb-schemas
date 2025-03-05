@@ -669,7 +669,7 @@ dependencies = [
 [[package]]
 name = "rgb-core"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/rgb-core?branch=0.11.1-2#2da508177bb7139f02c87fbf85d18273840a93d9"
+source = "git+https://github.com/zoedberg/rgb-core?branch=0.11.1-2#bc04976b1b3b9fa453bcb404a2620766b11a2bdb"
 dependencies = [
  "aluvm",
  "amplify",
@@ -688,27 +688,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "rgb-interfaces"
-version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/rgb-interfaces?branch=0.11.1-2#a145bef6c3bbed25bd240b439408f1fff02728af"
-dependencies = [
- "aluvm",
- "amplify",
- "bp-core",
- "chrono",
- "getrandom",
- "rgb-std",
- "serde_json",
- "sha2",
- "strict_encoding",
- "strict_types",
- "wasm-bindgen",
-]
-
-[[package]]
 name = "rgb-invoice"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#91a913fc96567fe4b0cacc5ccd10303a327b6a75"
+source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#8ab08f3a4877c1eeb242f81403ae3376554eea3b"
 dependencies = [
  "amplify",
  "baid64",
@@ -733,7 +715,6 @@ dependencies = [
  "amplify",
  "bp-core",
  "chrono",
- "rgb-interfaces",
  "rgb-std",
  "serde",
  "serde_json",
@@ -746,7 +727,7 @@ dependencies = [
 [[package]]
 name = "rgb-std"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#91a913fc96567fe4b0cacc5ccd10303a327b6a75"
+source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#8ab08f3a4877c1eeb242f81403ae3376554eea3b"
 dependencies = [
  "aluvm",
  "amplify",

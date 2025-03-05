@@ -19,35 +19,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Collectible Fungible Assets (CFA) schema implementing RGB25 fungible assets
-//! interface.
+//! Collectible Fungible Assets (CFA) schema.
 
 use aluvm::library::LibSite;
 use amplify::confinement::Confined;
-use ifaces::rgb25::Rgb25;
-use ifaces::{IssuerWrapper, LNPBP_IDENTITY};
-use rgbstd::interface::{IfaceClass, IfaceImpl, NamedField, NamedVariant, VerNo};
-use rgbstd::schema::{
-    FungibleType, GenesisSchema, GlobalStateSchema, Occurrences, Schema, TransitionSchema,
+use rgbstd::contract::{
+    AssignmentsFilter, ContractData, FungibleAllocation, IssuerWrapper, SchemaWrapper,
 };
-use rgbstd::stl::StandardTypes;
+use rgbstd::persistence::ContractStateRead;
+use rgbstd::schema::{
+    AssignmentDetails, FungibleType, GenesisSchema, GlobalDetails, GlobalStateSchema, Occurrences,
+    Schema, TransitionDetails, TransitionSchema,
+};
+use rgbstd::stl::{rgb_contract_stl, ContractTerms, Details, Name, StandardTypes};
 use rgbstd::validation::Scripts;
-use rgbstd::{GlobalStateType, Identity, OwnedStateSchema};
+use rgbstd::{Amount, Identity, OwnedStateSchema, Precision, SchemaId};
 use strict_types::TypeSystem;
 
 use crate::nia::{nia_lib, FN_NIA_GENESIS_OFFSET, FN_NIA_TRANSFER_OFFSET};
 use crate::{
-    ERRNO_ISSUED_MISMATCH, ERRNO_NON_EQUAL_IN_OUT, GS_ISSUED_SUPPLY, GS_TERMS, OS_ASSET,
-    TS_TRANSFER,
+    GS_ART, GS_DETAILS, GS_ISSUED_SUPPLY, GS_NAME, GS_PRECISION, GS_TERMS, LNPBP_IDENTITY,
+    OS_ASSET, TS_TRANSFER,
 };
 
-const GS_ART: GlobalStateType = GlobalStateType::with(3000);
-const GS_NAME: GlobalStateType = GlobalStateType::with(3001);
-const GS_DETAILS: GlobalStateType = GlobalStateType::with(3004);
-const GS_PRECISION: GlobalStateType = GlobalStateType::with(3005);
+pub const CFA_SCHEMA_ID: SchemaId = SchemaId::from_array([
+    0xd4, 0x27, 0xed, 0x7f, 0x07, 0x91, 0xf5, 0xdf, 0x49, 0x82, 0xb8, 0x90, 0xdf, 0xb8, 0xf4, 0xc5,
+    0xc6, 0x58, 0x7a, 0x49, 0x6f, 0xb9, 0xe7, 0xe6, 0x0c, 0x89, 0xb6, 0xd5, 0x51, 0x81, 0x7d, 0xa2,
+]);
 
 pub fn cfa_schema() -> Schema {
-    let types = StandardTypes::with(Rgb25::NONE.stl());
+    let types = StandardTypes::with(rgb_contract_stl());
 
     let nia_id = nia_lib().id();
 
@@ -59,15 +60,37 @@ pub fn cfa_schema() -> Schema {
         developer: Identity::from(LNPBP_IDENTITY),
         meta_types: none!(),
         global_types: tiny_bmap! {
-            GS_ART => GlobalStateSchema::once(types.get("RGBContract.Article")),
-            GS_NAME => GlobalStateSchema::once(types.get("RGBContract.Name")),
-            GS_DETAILS => GlobalStateSchema::once(types.get("RGBContract.Details")),
-            GS_PRECISION => GlobalStateSchema::once(types.get("RGBContract.Precision")),
-            GS_TERMS => GlobalStateSchema::once(types.get("RGBContract.ContractTerms")),
-            GS_ISSUED_SUPPLY => GlobalStateSchema::once(types.get("RGBContract.Amount")),
+            GS_ART => GlobalDetails {
+                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.Article")),
+                name: fname!("art"),
+            },
+            GS_NAME => GlobalDetails {
+                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.Name")),
+                name: fname!("name"),
+            },
+            GS_DETAILS => GlobalDetails {
+                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.Details")),
+                name: fname!("details"),
+            },
+            GS_PRECISION => GlobalDetails {
+                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.Precision")),
+                name: fname!("precision"),
+            },
+            GS_TERMS => GlobalDetails {
+                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.ContractTerms")),
+                name: fname!("terms"),
+            },
+            GS_ISSUED_SUPPLY => GlobalDetails {
+                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.Amount")),
+                name: fname!("issuedSupply"),
+            },
         },
         owned_types: tiny_bmap! {
-            OS_ASSET => OwnedStateSchema::Fungible(FungibleType::Unsigned64Bit),
+            OS_ASSET => AssignmentDetails {
+                owned_state_schema: OwnedStateSchema::Fungible(FungibleType::Unsigned64Bit),
+                name: fname!("assetOwner"),
+                default_transition: TS_TRANSFER,
+            }
         },
         genesis: GenesisSchema {
             metadata: none!(),
@@ -85,68 +108,100 @@ pub fn cfa_schema() -> Schema {
             validator: Some(LibSite::with(FN_NIA_GENESIS_OFFSET, nia_id)),
         },
         transitions: tiny_bmap! {
-            TS_TRANSFER => TransitionSchema {
-                metadata: none!(),
-                globals: none!(),
-                inputs: tiny_bmap! {
-                    OS_ASSET => Occurrences::OnceOrMore
+            TS_TRANSFER => TransitionDetails {
+                transition_schema: TransitionSchema {
+                    metadata: none!(),
+                    globals: none!(),
+                    inputs: tiny_bmap! {
+                        OS_ASSET => Occurrences::OnceOrMore
+                    },
+                    assignments: tiny_bmap! {
+                        OS_ASSET => Occurrences::OnceOrMore
+                    },
+                    validator: Some(LibSite::with(FN_NIA_TRANSFER_OFFSET, nia_id))
                 },
-                assignments: tiny_bmap! {
-                    OS_ASSET => Occurrences::OnceOrMore
-                },
-                validator: Some(LibSite::with(FN_NIA_TRANSFER_OFFSET, nia_id))
+                name: fname!("transfer"),
             }
         },
         reserved: none!(),
     }
 }
 
-pub fn cfa_rgb25() -> IfaceImpl {
-    let schema = cfa_schema();
-
-    IfaceImpl {
-        version: VerNo::V1,
-        schema_id: schema.schema_id(),
-        iface_id: Rgb25::NONE.iface_id(),
-        timestamp: 1713343888,
-        developer: Identity::from(LNPBP_IDENTITY),
-        metadata: none!(),
-        global_state: tiny_bset! {
-            NamedField::with(GS_ART, fname!("art")),
-            NamedField::with(GS_NAME, fname!("name")),
-            NamedField::with(GS_DETAILS, fname!("details")),
-            NamedField::with(GS_PRECISION, fname!("precision")),
-            NamedField::with(GS_TERMS, fname!("terms")),
-            NamedField::with(GS_ISSUED_SUPPLY, fname!("issuedSupply")),
-        },
-        assignments: tiny_bset! {
-            NamedField::with(OS_ASSET, fname!("assetOwner")),
-        },
-        transitions: tiny_bset! {
-            NamedField::with(TS_TRANSFER, fname!("transfer")),
-        },
-        errors: tiny_bset![
-            NamedVariant::with(ERRNO_ISSUED_MISMATCH, vname!("issuedMismatch")),
-            NamedVariant::with(ERRNO_NON_EQUAL_IN_OUT, vname!("nonEqualAmounts")),
-        ],
-    }
-}
-
 #[derive(Default)]
 pub struct CollectibleFungibleAsset;
 
+#[derive(Clone, Eq, PartialEq, Debug, From)]
+pub struct CfaWrapper<S: ContractStateRead>(ContractData<S>);
+
 impl IssuerWrapper for CollectibleFungibleAsset {
-    type IssuingIface = Rgb25;
-    const FEATURES: Rgb25 = Rgb25::NONE;
+    type Wrapper<S: ContractStateRead> = CfaWrapper<S>;
 
     fn schema() -> Schema { cfa_schema() }
-    fn issue_impl() -> IfaceImpl { cfa_rgb25() }
 
-    fn types() -> TypeSystem { StandardTypes::with(Rgb25::NONE.stl()).type_system() }
+    fn types() -> TypeSystem { StandardTypes::with(rgb_contract_stl()).type_system() }
 
     fn scripts() -> Scripts {
         let lib = nia_lib();
         Confined::from_checked(bmap! { lib.id() => lib })
+    }
+}
+
+impl<S: ContractStateRead> SchemaWrapper<S> for CfaWrapper<S> {
+    fn with(data: ContractData<S>) -> Self {
+        if data.schema.schema_id() != CFA_SCHEMA_ID {
+            panic!("the provided schema is not CFA");
+        }
+        Self(data)
+    }
+}
+
+impl<S: ContractStateRead> CfaWrapper<S> {
+    pub fn name(&self) -> Name {
+        let strict_val = &self
+            .0
+            .global("name")
+            .next()
+            .expect("CFA requires global state `name` to have at least one item");
+        Name::from_strict_val_unchecked(strict_val)
+    }
+
+    pub fn details(&self) -> Option<Details> {
+        self.0
+            .global("details")
+            .next()
+            .map(|strict_val| Details::from_strict_val_unchecked(&strict_val))
+    }
+
+    pub fn precision(&self) -> Precision {
+        let strict_val = &self
+            .0
+            .global("precision")
+            .next()
+            .expect("CFA requires global state `precision` to have at least one item");
+        Precision::from_strict_val_unchecked(strict_val)
+    }
+
+    pub fn total_issued_supply(&self) -> Amount {
+        self.0
+            .global("issuedSupply")
+            .map(|amount| Amount::from_strict_val_unchecked(&amount))
+            .sum()
+    }
+
+    pub fn contract_terms(&self) -> ContractTerms {
+        let strict_val = &self
+            .0
+            .global("terms")
+            .next()
+            .expect("CFA requires global state `terms` to have at least one item");
+        ContractTerms::from_strict_val_unchecked(strict_val)
+    }
+
+    pub fn allocations<'c>(
+        &'c self,
+        filter: impl AssignmentsFilter + 'c,
+    ) -> impl Iterator<Item = FungibleAllocation> + 'c {
+        self.0.fungible_raw(OS_ASSET, filter).unwrap()
     }
 }
 
@@ -155,13 +210,9 @@ mod test {
     use super::*;
 
     #[test]
-    fn iimpl_check() {
-        let iface = CollectibleFungibleAsset::FEATURES.iface();
-        if let Err(err) = cfa_rgb25().check(&iface, &cfa_schema()) {
-            for e in err {
-                eprintln!("{e}");
-            }
-            panic!("invalid CFA RGB25 interface implementation");
-        }
+    fn schema_id() {
+        let schema_id = cfa_schema().schema_id();
+        eprintln!("{:#04x?}", schema_id.to_byte_array());
+        assert_eq!(CFA_SCHEMA_ID, schema_id);
     }
 }

@@ -19,34 +19,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Non-Inflatable Assets (NIA) schema implementing RGB20 fungible assets
-//! interface.
+//! Non-Inflatable Assets (NIA) schema.
 
 use aluvm::isa::opcodes::INSTR_PUTA;
 use aluvm::isa::Instr;
 use aluvm::library::{Lib, LibSite};
 use amplify::confinement::Confined;
-use bp::Outpoint;
-use ifaces::{IssuerWrapper, Rgb20, Rgb20Wrapper, LNPBP_IDENTITY};
-use rgbstd::containers::ValidContract;
-use rgbstd::interface::{IfaceClass, IfaceImpl, NamedField, NamedVariant, VerNo};
-use rgbstd::persistence::MemContract;
-use rgbstd::schema::{
-    FungibleType, GenesisSchema, GlobalStateSchema, Occurrences, OwnedStateSchema, Schema,
-    TransitionSchema,
+use rgbstd::contract::{
+    AssignmentsFilter, ContractData, FungibleAllocation, IssuerWrapper, SchemaWrapper,
 };
-use rgbstd::stl::StandardTypes;
+use rgbstd::persistence::{ContractStateRead, MemContract};
+use rgbstd::schema::{
+    AssignmentDetails, FungibleType, GenesisSchema, GlobalDetails, GlobalStateSchema, Occurrences,
+    OwnedStateSchema, Schema, TransitionSchema,
+};
+use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, StandardTypes};
 use rgbstd::validation::Scripts;
 use rgbstd::vm::opcodes::INSTR_SVS;
 use rgbstd::vm::RgbIsa;
-use rgbstd::{rgbasm, Amount, Identity, Precision};
-use strict_encoding::InvalidRString;
+use rgbstd::{rgbasm, Amount, Identity, SchemaId, TransitionDetails};
 use strict_types::TypeSystem;
 
 use crate::{
     ERRNO_ISSUED_MISMATCH, ERRNO_NON_EQUAL_IN_OUT, GS_ISSUED_SUPPLY, GS_NOMINAL, GS_TERMS,
-    OS_ASSET, TS_TRANSFER,
+    LNPBP_IDENTITY, OS_ASSET, TS_TRANSFER,
 };
+
+pub const NIA_SCHEMA_ID: SchemaId = SchemaId::from_array([
+    0xb6, 0xae, 0x23, 0x6e, 0x6b, 0xbd, 0x84, 0xbe, 0xa4, 0x27, 0x98, 0x1a, 0x94, 0xf4, 0x8c, 0x04,
+    0x7d, 0xfb, 0x2b, 0x58, 0x3a, 0x32, 0xa3, 0xe5, 0xc5, 0x36, 0xbc, 0xff, 0xed, 0x23, 0x85, 0x9b,
+]);
 
 pub(crate) fn nia_lib() -> Lib {
     let code = rgbasm! {
@@ -80,7 +82,7 @@ pub(crate) const FN_NIA_GENESIS_OFFSET: u16 = 4 + 3 + 2;
 pub(crate) const FN_NIA_TRANSFER_OFFSET: u16 = 0;
 
 fn nia_schema() -> Schema {
-    let types = StandardTypes::with(Rgb20::FIXED.stl());
+    let types = StandardTypes::with(rgb_contract_stl());
 
     let alu_lib = nia_lib();
     let alu_id = alu_lib.id();
@@ -97,12 +99,25 @@ fn nia_schema() -> Schema {
         developer: Identity::from(LNPBP_IDENTITY),
         meta_types: none!(),
         global_types: tiny_bmap! {
-            GS_NOMINAL => GlobalStateSchema::once(types.get("RGBContract.AssetSpec")),
-            GS_TERMS => GlobalStateSchema::once(types.get("RGBContract.ContractTerms")),
-            GS_ISSUED_SUPPLY => GlobalStateSchema::once(types.get("RGBContract.Amount")),
+            GS_NOMINAL => GlobalDetails {
+                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.AssetSpec")),
+                name: fname!("spec"),
+            },
+            GS_TERMS => GlobalDetails {
+                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.ContractTerms")),
+                name: fname!("terms"),
+            },
+            GS_ISSUED_SUPPLY => GlobalDetails {
+                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.Amount")),
+                name: fname!("issuedSupply"),
+            },
         },
         owned_types: tiny_bmap! {
-            OS_ASSET => OwnedStateSchema::Fungible(FungibleType::Unsigned64Bit),
+            OS_ASSET => AssignmentDetails {
+                owned_state_schema: OwnedStateSchema::Fungible(FungibleType::Unsigned64Bit),
+                name: fname!("assetOwner"),
+                default_transition: TS_TRANSFER,
+            }
         },
         genesis: GenesisSchema {
             metadata: none!(),
@@ -117,48 +132,22 @@ fn nia_schema() -> Schema {
             validator: Some(LibSite::with(FN_NIA_GENESIS_OFFSET, alu_id)),
         },
         transitions: tiny_bmap! {
-            TS_TRANSFER => TransitionSchema {
-            metadata: none!(),
-                globals: none!(),
-                inputs: tiny_bmap! {
-                    OS_ASSET => Occurrences::OnceOrMore
+            TS_TRANSFER => TransitionDetails {
+                transition_schema: TransitionSchema {
+                    metadata: none!(),
+                    globals: none!(),
+                    inputs: tiny_bmap! {
+                        OS_ASSET => Occurrences::OnceOrMore
+                    },
+                    assignments: tiny_bmap! {
+                        OS_ASSET => Occurrences::OnceOrMore
+                    },
+                    validator: Some(LibSite::with(FN_NIA_TRANSFER_OFFSET, alu_id))
                 },
-                assignments: tiny_bmap! {
-                    OS_ASSET => Occurrences::OnceOrMore
-                },
-                validator: Some(LibSite::with(FN_NIA_TRANSFER_OFFSET, alu_id))
+                name: fname!("transfer"),
             }
         },
         reserved: none!(),
-    }
-}
-
-fn nia_rgb20() -> IfaceImpl {
-    let schema = nia_schema();
-    let iface = Rgb20::FIXED;
-
-    IfaceImpl {
-        version: VerNo::V1,
-        schema_id: schema.schema_id(),
-        iface_id: iface.iface_id(),
-        timestamp: 1713343888,
-        developer: Identity::from(LNPBP_IDENTITY),
-        metadata: none!(),
-        global_state: tiny_bset! {
-            NamedField::with(GS_NOMINAL, fname!("spec")),
-            NamedField::with(GS_TERMS, fname!("terms")),
-            NamedField::with(GS_ISSUED_SUPPLY, fname!("issuedSupply")),
-        },
-        assignments: tiny_bset! {
-            NamedField::with(OS_ASSET, fname!("assetOwner")),
-        },
-        transitions: tiny_bset! {
-            NamedField::with(TS_TRANSFER, fname!("transfer")),
-        },
-        errors: tiny_bset![
-            NamedVariant::with(ERRNO_ISSUED_MISMATCH, vname!("issuedMismatch")),
-            NamedVariant::with(ERRNO_NON_EQUAL_IN_OUT, vname!("nonEqualAmounts")),
-        ],
     }
 }
 
@@ -166,13 +155,11 @@ fn nia_rgb20() -> IfaceImpl {
 pub struct NonInflatableAsset;
 
 impl IssuerWrapper for NonInflatableAsset {
-    const FEATURES: Rgb20 = Rgb20::FIXED;
-    type IssuingIface = Rgb20;
+    type Wrapper<S: ContractStateRead> = NiaWrapper<S>;
 
     fn schema() -> Schema { nia_schema() }
-    fn issue_impl() -> IfaceImpl { nia_rgb20() }
 
-    fn types() -> TypeSystem { StandardTypes::with(Self::FEATURES.stl()).type_system() }
+    fn types() -> TypeSystem { StandardTypes::with(rgb_contract_stl()).type_system() }
 
     fn scripts() -> Scripts {
         let lib = nia_lib();
@@ -180,23 +167,49 @@ impl IssuerWrapper for NonInflatableAsset {
     }
 }
 
-impl NonInflatableAsset {
-    pub fn testnet(
-        issuer: &str,
-        ticker: &str,
-        name: &str,
-        details: Option<&str>,
-        precision: Precision,
-        allocations: impl IntoIterator<Item = (Outpoint, impl Into<Amount>)>,
-    ) -> Result<ValidContract, InvalidRString> {
-        let mut issuer =
-            Rgb20Wrapper::<MemContract>::testnet::<Self>(issuer, ticker, name, details, precision)?;
-        for (beneficiary, amount) in allocations {
-            issuer = issuer
-                .allocate(beneficiary, amount)
-                .expect("invalid contract data");
+#[derive(Clone, Eq, PartialEq, Debug, From)]
+pub struct NiaWrapper<S: ContractStateRead>(ContractData<S>);
+
+impl<S: ContractStateRead> SchemaWrapper<S> for NiaWrapper<S> {
+    fn with(data: ContractData<S>) -> Self {
+        if data.schema.schema_id() != NIA_SCHEMA_ID {
+            panic!("the provided schema is not NIA");
         }
-        Ok(issuer.issue_contract().expect("invalid contract data"))
+        Self(data)
+    }
+}
+
+impl<S: ContractStateRead> NiaWrapper<S> {
+    pub fn spec(&self) -> AssetSpec {
+        let strict_val = &self
+            .0
+            .global("spec")
+            .next()
+            .expect("NIA requires global state `spec` to have at least one item");
+        AssetSpec::from_strict_val_unchecked(strict_val)
+    }
+
+    pub fn contract_terms(&self) -> ContractTerms {
+        let strict_val = &self
+            .0
+            .global("terms")
+            .next()
+            .expect("NIA requires global state `terms` to have at least one item");
+        ContractTerms::from_strict_val_unchecked(strict_val)
+    }
+
+    pub fn total_issued_supply(&self) -> Amount {
+        self.0
+            .global("issuedSupply")
+            .map(|amount| Amount::from_strict_val_unchecked(&amount))
+            .sum()
+    }
+
+    pub fn allocations<'c>(
+        &'c self,
+        filter: impl AssignmentsFilter + 'c,
+    ) -> impl Iterator<Item = FungibleAllocation> + 'c {
+        self.0.fungible_raw(OS_ASSET, filter).unwrap()
     }
 }
 
@@ -207,7 +220,7 @@ mod test {
     use bp::seals::txout::BlindSeal;
     use bp::Txid;
     use rgbstd::containers::{BuilderSeal, ConsignmentExt};
-    use rgbstd::interface::*;
+    use rgbstd::contract::*;
     use rgbstd::invoice::Precision;
     use rgbstd::stl::*;
     use rgbstd::*;
@@ -215,14 +228,10 @@ mod test {
     use super::*;
 
     #[test]
-    fn iimpl_check() {
-        let iface = NonInflatableAsset::FEATURES.iface();
-        if let Err(err) = nia_rgb20().check(&iface, &nia_schema()) {
-            for e in err {
-                eprintln!("{e}");
-            }
-            panic!("invalid NIA RGB20 interface implementation");
-        }
+    fn schema_id() {
+        let schema_id = nia_schema().schema_id();
+        eprintln!("{:#04x?}", schema_id.to_byte_array());
+        assert_eq!(NIA_SCHEMA_ID, schema_id);
     }
 
     #[test]
@@ -248,9 +257,7 @@ mod test {
 
         let builder = ContractBuilder::deterministic(
             Identity::default(),
-            NonInflatableAsset::FEATURES.iface(),
             NonInflatableAsset::schema(),
-            NonInflatableAsset::issue_impl(),
             NonInflatableAsset::types(),
             NonInflatableAsset::scripts(),
             ChainNet::BitcoinTestnet4,
@@ -268,7 +275,7 @@ mod test {
 
         assert_eq!(
             contract.contract_id().to_string(),
-            s!("rgb:1B5JbWiC-lva4AOb-pBj3SLb-oTIU3ok-VqLsYpx-AfQk!90")
+            s!("rgb:33XsLc$B-ZHxQOEN-NJuRVxR-EZwsR1w-V1woS5X-wK8yrDU")
         );
     }
 }
