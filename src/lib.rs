@@ -28,10 +28,10 @@ mod cfa;
 mod nia;
 mod uda;
 
-pub use cfa::{CollectibleFungibleAsset, CFA_SCHEMA_ID};
-pub use nia::{NonInflatableAsset, NIA_SCHEMA_ID};
+pub use cfa::{CfaWrapper, CollectibleFungibleAsset, CFA_SCHEMA_ID};
+pub use nia::{NiaWrapper, NonInflatableAsset, NIA_SCHEMA_ID};
 use rgbstd::{AssignmentType, GlobalStateType, TransitionType};
-pub use uda::{UniqueDigitalAsset, UDA_SCHEMA_ID};
+pub use uda::{UdaWrapper, UniqueDigitalAsset, UDA_SCHEMA_ID};
 
 pub const LNPBP_IDENTITY: &str = "ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w";
 
