@@ -26,10 +26,12 @@ extern crate strict_types;
 
 mod cfa;
 mod nia;
+mod pfa;
 mod uda;
 
 pub use cfa::{CfaWrapper, CollectibleFungibleAsset, CFA_SCHEMA_ID};
 pub use nia::{NiaWrapper, NonInflatableAsset, NIA_SCHEMA_ID};
+pub use pfa::{PermissionedFungibleAsset, PfaWrapper, PFA_SCHEMA_ID};
 use rgbstd::{AssignmentType, GlobalStateType, TransitionType};
 pub use uda::{UdaWrapper, UniqueDigitalAsset, UDA_SCHEMA_ID};
 
@@ -45,6 +47,7 @@ pub const GS_NOMINAL: GlobalStateType = GlobalStateType::with(2000);
 pub const GS_PRECISION: GlobalStateType = GlobalStateType::with(3005);
 pub const GS_TERMS: GlobalStateType = GlobalStateType::with(2001);
 pub const GS_TOKENS: GlobalStateType = GlobalStateType::with(2102);
+pub const GS_PUBKEY: GlobalStateType = GlobalStateType::with(3006);
 
 pub const OS_ASSET: AssignmentType = AssignmentType::with(4000);
 
@@ -53,6 +56,8 @@ pub const TS_TRANSFER: TransitionType = TransitionType::with(10000);
 pub const ERRNO_NON_EQUAL_IN_OUT: u8 = 0;
 pub const ERRNO_ISSUED_MISMATCH: u8 = 1;
 pub const ERRNO_NON_FRACTIONAL: u8 = 10;
+pub const ERRNO_MISSING_PUBKEY: u8 = 20;
+pub const ERRNO_INVALID_SIGNATURE: u8 = 21;
 
 pub mod dumb {
     use bp::Tx;

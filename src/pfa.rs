@@ -19,9 +19,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Non-Inflatable Assets (NIA) schema.
+//! Permissioned Fungible Assets (PFA) schema.
 
-use aluvm::isa::opcodes::INSTR_PUTA;
 use aluvm::isa::Instr;
 use aluvm::library::{Lib, LibSite};
 use amplify::confinement::Confined;
@@ -35,66 +34,68 @@ use rgbstd::schema::{
 };
 use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, StandardTypes};
 use rgbstd::validation::Scripts;
-use rgbstd::vm::opcodes::INSTR_SVS;
 use rgbstd::vm::RgbIsa;
 use rgbstd::{rgbasm, Amount, Identity, SchemaId, TransitionDetails};
 use strict_types::TypeSystem;
 
 use crate::{
-    ERRNO_ISSUED_MISMATCH, ERRNO_NON_EQUAL_IN_OUT, GS_ISSUED_SUPPLY, GS_NOMINAL, GS_TERMS,
-    LNPBP_IDENTITY, OS_ASSET, TS_TRANSFER,
+    ERRNO_INVALID_SIGNATURE, ERRNO_ISSUED_MISMATCH, ERRNO_MISSING_PUBKEY, ERRNO_NON_EQUAL_IN_OUT,
+    GS_ISSUED_SUPPLY, GS_NOMINAL, GS_PUBKEY, GS_TERMS, LNPBP_IDENTITY, OS_ASSET, TS_TRANSFER,
 };
 
-pub const NIA_SCHEMA_ID: SchemaId = SchemaId::from_array([
-    0x1e, 0x73, 0x95, 0x52, 0x32, 0xbc, 0x22, 0x0a, 0x43, 0x02, 0x98, 0x08, 0xa0, 0x75, 0x66, 0x32,
-    0x58, 0x63, 0x6e, 0x90, 0xdd, 0x37, 0x16, 0x5b, 0x5a, 0xa3, 0xf0, 0xaa, 0xc8, 0xbf, 0xfd, 0xa8,
+pub const PFA_SCHEMA_ID: SchemaId = SchemaId::from_array([
+    0x9b, 0x66, 0x05, 0x4d, 0x03, 0xcf, 0xa0, 0xfb, 0x6b, 0x80, 0x3c, 0xea, 0x12, 0xd7, 0xfd, 0xa7,
+    0x0f, 0xc1, 0x92, 0xf8, 0xa2, 0x6b, 0x6e, 0x86, 0xc2, 0x67, 0x75, 0x46, 0x3f, 0x19, 0x57, 0xf6,
 ]);
 
-pub(crate) fn nia_lib() -> Lib {
+pub(crate) fn pfa_lib_transition() -> Lib {
     let code = rgbasm! {
-        // SUBROUTINE Transfer validation
-        // Set errno
-        put     a8[0],ERRNO_NON_EQUAL_IN_OUT;
-        // Checking that the sum of inputs is equal to the sum of outputs.
-        svs     OS_ASSET;
-        test;
-        ret;
+        // Checking that the sum of inputs is equal to the sum of outputs
+        put     a8[0],ERRNO_NON_EQUAL_IN_OUT;  // set errno
+        svs     OS_ASSET;  // verify sum
+        test;  // check it didn't fail
 
-        // SUBROUTINE Genesis validation
-        // Checking genesis assignments amount against reported amount of issued assets present in
-        // the global state.
-        put     a8[0],ERRNO_ISSUED_MISMATCH;
-        put     a8[1],0;
-        put     a16[0],0;
-        // Read global state into s16[0]
-        ldg     GS_ISSUED_SUPPLY,a8[1],s16[0];
-        // Extract 64 bits from the beginning of s16[0] into a64[0]
-        // NB: if the global state is invalid, we will fail here and fail the validation
-        extr    s16[0],a64[0],a16[0];
-        // verify sum of outputs against a64[0] value
-        sas     OS_ASSET;
-        test;
-        ret;
+        // Check transition signature
+        put     a8[0],ERRNO_MISSING_PUBKEY;  // set errno
+        put     a32[0],0;  // set a32[0] to 0
+        ldc     GS_PUBKEY,a32[0],s16[0];  // get global pubkey
+        put     a8[0],ERRNO_INVALID_SIGNATURE;  // set errno
+        vts     s16[0];  // verify signature
+        test;  // check it didn't fail
+        ret;  // return execution flow
     };
     Lib::assemble::<Instr<RgbIsa<MemContract>>>(&code).expect("wrong non-inflatable asset script")
 }
-pub(crate) const FN_NIA_GENESIS_OFFSET: u16 = 4 + 3 + 2;
-pub(crate) const FN_NIA_TRANSFER_OFFSET: u16 = 0;
 
-fn nia_schema() -> Schema {
+pub(crate) fn pfa_lib_genesis() -> Lib {
+    let code = rgbasm! {
+        // Check genesis assignments amount against reported amount of issued assets present in the
+        // global state
+        put     a8[0],ERRNO_ISSUED_MISMATCH;  // set errno
+        put     a8[1],0;  // set a8[1] to 0
+        put     a16[0],0;  // set a16[0] to 0
+        ldg     GS_ISSUED_SUPPLY,a8[1],s16[0];  // get global issued supply
+        extr    s16[0],a64[0],a16[0];  // extract 64 bits from the beginning of s16[0] into a64[0]
+        sas     OS_ASSET;  // verify sum of outputs against a64[0] value
+        test;  // check it didn't fail
+        ret;  // return execution flow
+    };
+    Lib::assemble::<Instr<RgbIsa<MemContract>>>(&code).expect("wrong non-inflatable asset script")
+}
+
+fn pfa_schema() -> Schema {
     let types = StandardTypes::with(rgb_contract_stl());
 
-    let alu_lib = nia_lib();
-    let alu_id = alu_lib.id();
-    assert_eq!(alu_lib.code.as_ref()[FN_NIA_TRANSFER_OFFSET as usize + 4], INSTR_SVS);
-    assert_eq!(alu_lib.code.as_ref()[FN_NIA_GENESIS_OFFSET as usize], INSTR_PUTA);
-    assert_eq!(alu_lib.code.as_ref()[FN_NIA_GENESIS_OFFSET as usize + 4], INSTR_PUTA);
-    assert_eq!(alu_lib.code.as_ref()[FN_NIA_GENESIS_OFFSET as usize + 8], INSTR_PUTA);
+    let alu_lib_genesis = pfa_lib_genesis();
+    let alu_id_genesis = alu_lib_genesis.id();
+
+    let alu_lib_transition = pfa_lib_transition();
+    let alu_id_transition = alu_lib_transition.id();
 
     Schema {
         ffv: zero!(),
         flags: none!(),
-        name: tn!("NonInflatableAsset"),
+        name: tn!("PermissionedFungibleAsset"),
         timestamp: 1713343888,
         developer: Identity::from(LNPBP_IDENTITY),
         meta_types: none!(),
@@ -111,6 +112,10 @@ fn nia_schema() -> Schema {
                 global_state_schema: GlobalStateSchema::once(types.get("RGBContract.Amount")),
                 name: fname!("issuedSupply"),
             },
+            GS_PUBKEY => GlobalDetails {
+                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.PublicKey")),
+                name: fname!("pubkey"),
+            },
         },
         owned_types: tiny_bmap! {
             OS_ASSET => AssignmentDetails {
@@ -125,11 +130,12 @@ fn nia_schema() -> Schema {
                 GS_NOMINAL => Occurrences::Once,
                 GS_TERMS => Occurrences::Once,
                 GS_ISSUED_SUPPLY => Occurrences::Once,
+                GS_PUBKEY => Occurrences::Once,
             },
             assignments: tiny_bmap! {
                 OS_ASSET => Occurrences::OnceOrMore,
             },
-            validator: Some(LibSite::with(FN_NIA_GENESIS_OFFSET, alu_id)),
+            validator: Some(LibSite::with(0, alu_id_genesis)),
         },
         transitions: tiny_bmap! {
             TS_TRANSFER => TransitionDetails {
@@ -142,7 +148,7 @@ fn nia_schema() -> Schema {
                     assignments: tiny_bmap! {
                         OS_ASSET => Occurrences::OnceOrMore
                     },
-                    validator: Some(LibSite::with(FN_NIA_TRANSFER_OFFSET, alu_id))
+                    validator: Some(LibSite::with(0, alu_id_transition))
                 },
                 name: fname!("transfer"),
             }
@@ -152,40 +158,48 @@ fn nia_schema() -> Schema {
 }
 
 #[derive(Default)]
-pub struct NonInflatableAsset;
+pub struct PermissionedFungibleAsset;
 
-impl IssuerWrapper for NonInflatableAsset {
-    type Wrapper<S: ContractStateRead> = NiaWrapper<S>;
+impl IssuerWrapper for PermissionedFungibleAsset {
+    type Wrapper<S: ContractStateRead> = PfaWrapper<S>;
 
-    fn schema() -> Schema { nia_schema() }
+    fn schema() -> Schema { pfa_schema() }
 
     fn types() -> TypeSystem { StandardTypes::with(rgb_contract_stl()).type_system() }
 
     fn scripts() -> Scripts {
-        let lib = nia_lib();
-        Confined::from_checked(bmap! { lib.id() => lib })
+        let alu_lib_genesis = pfa_lib_genesis();
+        let alu_id_genesis = alu_lib_genesis.id();
+
+        let alu_lib_transition = pfa_lib_transition();
+        let alu_id_transition = alu_lib_transition.id();
+
+        Confined::from_checked(bmap! {
+            alu_id_genesis => alu_lib_genesis,
+            alu_id_transition => alu_lib_transition,
+        })
     }
 }
 
 #[derive(Clone, Eq, PartialEq, Debug, From)]
-pub struct NiaWrapper<S: ContractStateRead>(ContractData<S>);
+pub struct PfaWrapper<S: ContractStateRead>(ContractData<S>);
 
-impl<S: ContractStateRead> SchemaWrapper<S> for NiaWrapper<S> {
+impl<S: ContractStateRead> SchemaWrapper<S> for PfaWrapper<S> {
     fn with(data: ContractData<S>) -> Self {
-        if data.schema.schema_id() != NIA_SCHEMA_ID {
-            panic!("the provided schema is not NIA");
+        if data.schema.schema_id() != PFA_SCHEMA_ID {
+            panic!("the provided schema is not PFA");
         }
         Self(data)
     }
 }
 
-impl<S: ContractStateRead> NiaWrapper<S> {
+impl<S: ContractStateRead> PfaWrapper<S> {
     pub fn spec(&self) -> AssetSpec {
         let strict_val = &self
             .0
             .global("spec")
             .next()
-            .expect("NIA requires global state `spec` to have at least one item");
+            .expect("PFA requires global state `spec` to have at least one item");
         AssetSpec::from_strict_val_unchecked(strict_val)
     }
 
@@ -194,7 +208,7 @@ impl<S: ContractStateRead> NiaWrapper<S> {
             .0
             .global("terms")
             .next()
-            .expect("NIA requires global state `terms` to have at least one item");
+            .expect("PFA requires global state `terms` to have at least one item");
         ContractTerms::from_strict_val_unchecked(strict_val)
     }
 
@@ -215,67 +229,12 @@ impl<S: ContractStateRead> NiaWrapper<S> {
 
 #[cfg(test)]
 mod test {
-    use std::str::FromStr;
-
-    use bp::seals::txout::BlindSeal;
-    use bp::Txid;
-    use rgbstd::containers::{BuilderSeal, ConsignmentExt};
-    use rgbstd::contract::*;
-    use rgbstd::invoice::Precision;
-    use rgbstd::stl::*;
-    use rgbstd::*;
-
     use super::*;
 
     #[test]
     fn schema_id() {
-        let schema_id = nia_schema().schema_id();
+        let schema_id = pfa_schema().schema_id();
         eprintln!("{:#04x?}", schema_id.to_byte_array());
-        assert_eq!(NIA_SCHEMA_ID, schema_id);
-    }
-
-    #[test]
-    fn deterministic_contract_id() {
-        let created_at = 1713261744;
-        let terms = ContractTerms {
-            text: RicardianContract::default(),
-            media: None,
-        };
-        let spec = AssetSpec {
-            ticker: Ticker::from("TICKER"),
-            name: Name::from("NAME"),
-            details: None,
-            precision: Precision::try_from(2).unwrap(),
-        };
-        let issued_supply = 999u64;
-        let seal: BlindSeal<Txid> = GenesisSeal::from(BlindSeal::with_blinding(
-            Txid::from_str("8d54c98d4c29a1ec4fd90635f543f0f7a871a78eb6a6e706342f831d92e3ba19")
-                .unwrap(),
-            0,
-            654321,
-        ));
-
-        let builder = ContractBuilder::deterministic(
-            Identity::default(),
-            NonInflatableAsset::schema(),
-            NonInflatableAsset::types(),
-            NonInflatableAsset::scripts(),
-            ChainNet::BitcoinTestnet4,
-        )
-        .add_global_state("spec", spec)
-        .unwrap()
-        .add_global_state("terms", terms)
-        .unwrap()
-        .add_global_state("issuedSupply", Amount::from(issued_supply))
-        .unwrap()
-        .add_fungible_state("assetOwner", BuilderSeal::from(seal), issued_supply)
-        .unwrap();
-
-        let contract = builder.issue_contract_det(created_at).unwrap();
-
-        assert_eq!(
-            contract.contract_id().to_string(),
-            s!("rgb:T2ICjwk3-YuQi5vG-0CCiXIB-iX$KLl2-VRvdOd5-UKcUvBI")
-        );
+        assert_eq!(PFA_SCHEMA_ID, schema_id);
     }
 }

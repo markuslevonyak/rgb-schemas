@@ -42,5 +42,7 @@ log = ["aluvm/log"]
 fs = ["rgb-std/fs"]
 
 [patch.crates-io]
+bp-consensus = { git = "https://github.com/zoedberg/bp-core", branch = "0.11.1-2" }
+bp-core = { git = "https://github.com/zoedberg/bp-core", branch = "0.11.1-2" }
 rgb-core = { git = "https://github.com/zoedberg/rgb-core", branch = "0.11.1-2" }
 rgb-std = { git = "https://github.com/zoedberg/rgb-std", branch = "0.11.1-2" }
