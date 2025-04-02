@@ -7,7 +7,7 @@ categories = ["cryptography::cryptocurrencies"]
 authors = ["Dr Maxim Orlovsky <orlovsky@lnp-bp.org>"]
 homepage = "https://github.com/RGB-WG"
 repository = "https://github.com/RGB-WG/rgb-schemata"
-rust-version = "1.80.0"
+rust-version = "1.81.0"
 edition = "2021"
 license = "Apache-2.0"
 readme = "README.md"
@@ -42,6 +42,8 @@ log = ["aluvm/log"]
 fs = ["rgb-std/fs"]
 
 [patch.crates-io]
+aluvm = { git = "https://github.com/zoedberg/rust-aluvm", branch = "0.11.1-2" }
+commit_verify = { git = "https://github.com/zoedberg/client_side_validation", branch = "0.11.1-2" }
 bp-consensus = { git = "https://github.com/zoedberg/bp-core", branch = "0.11.1-2" }
 bp-core = { git = "https://github.com/zoedberg/bp-core", branch = "0.11.1-2" }
 rgb-core = { git = "https://github.com/zoedberg/rgb-core", branch = "0.11.1-2" }
