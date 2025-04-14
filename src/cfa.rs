@@ -47,8 +47,10 @@ pub const CFA_SCHEMA_ID: SchemaId = SchemaId::from_array([
     0xd1, 0xee, 0x57, 0xd2, 0xa4, 0x76, 0x5b, 0x0d, 0x78, 0x00, 0xc1, 0x94, 0xc7, 0x7e, 0xed, 0xcb,
 ]);
 
+fn cfa_standard_types() -> StandardTypes { StandardTypes::with(rgb_contract_stl()) }
+
 pub fn cfa_schema() -> Schema {
-    let types = StandardTypes::with(rgb_contract_stl());
+    let types = cfa_standard_types();
 
     let nia_id = nia_lib().id();
 
@@ -138,7 +140,7 @@ impl IssuerWrapper for CollectibleFungibleAsset {
 
     fn schema() -> Schema { cfa_schema() }
 
-    fn types() -> TypeSystem { StandardTypes::with(rgb_contract_stl()).type_system() }
+    fn types() -> TypeSystem { cfa_standard_types().type_system(cfa_schema()) }
 
     fn scripts() -> Scripts {
         let lib = nia_lib();

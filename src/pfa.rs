@@ -83,8 +83,10 @@ pub(crate) fn pfa_lib_genesis() -> Lib {
     Lib::assemble::<Instr<RgbIsa<MemContract>>>(&code).expect("wrong non-inflatable asset script")
 }
 
+fn pfa_standard_types() -> StandardTypes { StandardTypes::with(rgb_contract_stl()) }
+
 fn pfa_schema() -> Schema {
-    let types = StandardTypes::with(rgb_contract_stl());
+    let types = pfa_standard_types();
 
     let alu_lib_genesis = pfa_lib_genesis();
     let alu_id_genesis = alu_lib_genesis.id();
@@ -165,7 +167,7 @@ impl IssuerWrapper for PermissionedFungibleAsset {
 
     fn schema() -> Schema { pfa_schema() }
 
-    fn types() -> TypeSystem { StandardTypes::with(rgb_contract_stl()).type_system() }
+    fn types() -> TypeSystem { pfa_standard_types().type_system(pfa_schema()) }
 
     fn scripts() -> Scripts {
         let alu_lib_genesis = pfa_lib_genesis();

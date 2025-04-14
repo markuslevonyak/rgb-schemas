@@ -81,8 +81,10 @@ pub(crate) fn nia_lib() -> Lib {
 pub(crate) const FN_NIA_GENESIS_OFFSET: u16 = 4 + 3 + 2;
 pub(crate) const FN_NIA_TRANSFER_OFFSET: u16 = 0;
 
+fn nia_standard_types() -> StandardTypes { StandardTypes::with(rgb_contract_stl()) }
+
 fn nia_schema() -> Schema {
-    let types = StandardTypes::with(rgb_contract_stl());
+    let types = nia_standard_types();
 
     let alu_lib = nia_lib();
     let alu_id = alu_lib.id();
@@ -159,7 +161,7 @@ impl IssuerWrapper for NonInflatableAsset {
 
     fn schema() -> Schema { nia_schema() }
 
-    fn types() -> TypeSystem { StandardTypes::with(rgb_contract_stl()).type_system() }
+    fn types() -> TypeSystem { nia_standard_types().type_system(nia_schema()) }
 
     fn scripts() -> Scripts {
         let lib = nia_lib();

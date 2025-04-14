@@ -53,6 +53,8 @@ pub const FN_GENESIS_OFFSET: u16 = 4 + 4 + 3;
 pub const FN_TRANSFER_OFFSET: u16 = 0;
 pub const FN_SHARED_OFFSET: u16 = FN_GENESIS_OFFSET + 4 + 4 + 4;
 
+fn uda_standard_types() -> StandardTypes { StandardTypes::with(rgb_contract_stl()) }
+
 fn uda_lib() -> Lib {
     let code = rgbasm! {
         // SUBROUTINE 2: Transfer validation
@@ -103,7 +105,7 @@ fn uda_lib() -> Lib {
 }
 
 fn uda_schema() -> Schema {
-    let types = StandardTypes::with(rgb_contract_stl());
+    let types = uda_standard_types();
 
     let alu_lib = uda_lib();
     let alu_id = alu_lib.id();
@@ -190,7 +192,7 @@ impl IssuerWrapper for UniqueDigitalAsset {
 
     fn schema() -> Schema { uda_schema() }
 
-    fn types() -> TypeSystem { StandardTypes::with(rgb_contract_stl()).type_system() }
+    fn types() -> TypeSystem { uda_standard_types().type_system(uda_schema()) }
 
     fn scripts() -> Scripts {
         let lib = uda_lib();

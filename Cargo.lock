@@ -224,7 +224,7 @@ dependencies = [
 [[package]]
 name = "bp-consensus"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#2f0fd1f6c5cd81f748bacd8237993bdb7bdfe9d1"
+source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#55e5cd9ba902c198ae4cfdcc241047a6190630cd"
 dependencies = [
  "amplify",
  "chrono",
@@ -238,7 +238,7 @@ dependencies = [
 [[package]]
 name = "bp-core"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#2f0fd1f6c5cd81f748bacd8237993bdb7bdfe9d1"
+source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#55e5cd9ba902c198ae4cfdcc241047a6190630cd"
 dependencies = [
  "amplify",
  "bp-consensus",
@@ -256,7 +256,7 @@ dependencies = [
 [[package]]
 name = "bp-dbc"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#2f0fd1f6c5cd81f748bacd8237993bdb7bdfe9d1"
+source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#55e5cd9ba902c198ae4cfdcc241047a6190630cd"
 dependencies = [
  "amplify",
  "base85",
@@ -282,7 +282,7 @@ dependencies = [
 [[package]]
 name = "bp-seals"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#2f0fd1f6c5cd81f748bacd8237993bdb7bdfe9d1"
+source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#55e5cd9ba902c198ae4cfdcc241047a6190630cd"
 dependencies = [
  "amplify",
  "baid64",
@@ -658,7 +658,7 @@ dependencies = [
 [[package]]
 name = "rgb-core"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/rgb-core?branch=0.11.1-2#dac80b994329e057398151467547b9b2d2d90ee0"
+source = "git+https://github.com/zoedberg/rgb-core?branch=0.11.1-2#1d7d45ef05a10d4695e26fa581fd2cccff4477f4"
 dependencies = [
  "aluvm",
  "amplify",
@@ -679,7 +679,7 @@ dependencies = [
 [[package]]
 name = "rgb-invoice"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#8197aeb77372fdd21a0982e6a7bdadf6d88ea69b"
+source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#f8630e6e07e0ea3f5d8aa7d4290df8a17e1472dd"
 dependencies = [
  "amplify",
  "baid64",
@@ -716,7 +716,7 @@ dependencies = [
 [[package]]
 name = "rgb-std"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#8197aeb77372fdd21a0982e6a7bdadf6d88ea69b"
+source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#f8630e6e07e0ea3f5d8aa7d4290df8a17e1472dd"
 dependencies = [
  "aluvm",
  "amplify",
