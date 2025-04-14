@@ -1,10 +1,10 @@
 use amplify::hex::FromHex;
-use bp::Txid;
+use bp::{CompressedPk, Txid};
 use rgbstd::containers::{ConsignmentExt, FileContent, Kit};
 use rgbstd::contract::{FilterIncludeAll, FungibleAllocation, IssuerWrapper};
 use rgbstd::invoice::Precision;
 use rgbstd::persistence::Stock;
-use rgbstd::stl::{AssetSpec, ContractTerms, PublicKey, RicardianContract};
+use rgbstd::stl::{AssetSpec, ContractTerms, RicardianContract};
 use rgbstd::{Amount, ChainNet, GenesisSeal};
 use schemata::dumb::NoResolver;
 use schemata::PermissionedFungibleAsset;
@@ -23,7 +23,7 @@ fn main() {
 
     let issued_supply = Amount::from(100000u64);
 
-    let pubkey = PublicKey::new([
+    let pubkey = CompressedPk::from_byte_array([
         2, 199, 163, 211, 116, 75, 108, 119, 241, 66, 54, 236, 233, 189, 142, 108, 37, 135, 56,
         128, 200, 176, 199, 9, 117, 132, 72, 200, 167, 185, 4, 64, 53,
     ])

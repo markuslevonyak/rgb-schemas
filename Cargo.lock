@@ -224,7 +224,7 @@ dependencies = [
 [[package]]
 name = "bp-consensus"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#a439ba556e078fe7a070d633dfcb9fa40e28e1bf"
+source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#6651e04e207b1219b232997186b149f4279d3c9a"
 dependencies = [
  "amplify",
  "chrono",
@@ -238,7 +238,7 @@ dependencies = [
 [[package]]
 name = "bp-core"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#a439ba556e078fe7a070d633dfcb9fa40e28e1bf"
+source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#6651e04e207b1219b232997186b149f4279d3c9a"
 dependencies = [
  "amplify",
  "bp-consensus",
@@ -256,7 +256,7 @@ dependencies = [
 [[package]]
 name = "bp-dbc"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#a439ba556e078fe7a070d633dfcb9fa40e28e1bf"
+source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#6651e04e207b1219b232997186b149f4279d3c9a"
 dependencies = [
  "amplify",
  "base85",
@@ -282,7 +282,7 @@ dependencies = [
 [[package]]
 name = "bp-seals"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#a439ba556e078fe7a070d633dfcb9fa40e28e1bf"
+source = "git+https://github.com/zoedberg/bp-core?branch=0.11.1-2#6651e04e207b1219b232997186b149f4279d3c9a"
 dependencies = [
  "amplify",
  "baid64",
@@ -534,9 +534,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.171"
+version = "0.2.172"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c19937216e9d3aa9956d9bb8dfc0b0c8beb6058fc4f7a4dc4d850edf86a237d6"
+checksum = "d750af042f7ef4f724306de029d18836c26c1765a54a6a3f094cbd23a7267ffa"
 
 [[package]]
 name = "log"
@@ -609,9 +609,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.94"
+version = "1.0.95"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a31971752e70b8b2686d7e46ec17fb38dad4051d94024c88df49b667caea9c84"
+checksum = "02b3e5e68a3a1a02aad3ec490a98007cbc13c37cbe84a3cd7b8e406d76e7f778"
 dependencies = [
  "unicode-ident",
 ]
@@ -679,7 +679,7 @@ dependencies = [
 [[package]]
 name = "rgb-invoice"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#f8630e6e07e0ea3f5d8aa7d4290df8a17e1472dd"
+source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#9ed30693aa990475b86c0aa1370ea388425ded90"
 dependencies = [
  "amplify",
  "baid64",
@@ -714,7 +714,7 @@ dependencies = [
 [[package]]
 name = "rgb-std"
 version = "0.11.1-alpha.1"
-source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#f8630e6e07e0ea3f5d8aa7d4290df8a17e1472dd"
+source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-2#9ed30693aa990475b86c0aa1370ea388425ded90"
 dependencies = [
  "aluvm",
  "amplify",
