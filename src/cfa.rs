@@ -33,18 +33,17 @@ use rgbstd::schema::{
 };
 use rgbstd::stl::{rgb_contract_stl, ContractTerms, Details, Name, StandardTypes};
 use rgbstd::validation::Scripts;
-use rgbstd::{Amount, Identity, OwnedStateSchema, Precision, SchemaId};
+use rgbstd::{Amount, OwnedStateSchema, Precision, SchemaId};
 use strict_types::TypeSystem;
 
 use crate::nia::{nia_lib, FN_NIA_GENESIS_OFFSET, FN_NIA_TRANSFER_OFFSET};
 use crate::{
-    GS_ART, GS_DETAILS, GS_ISSUED_SUPPLY, GS_NAME, GS_PRECISION, GS_TERMS, LNPBP_IDENTITY,
-    OS_ASSET, TS_TRANSFER,
+    GS_ART, GS_DETAILS, GS_ISSUED_SUPPLY, GS_NAME, GS_PRECISION, GS_TERMS, OS_ASSET, TS_TRANSFER,
 };
 
 pub const CFA_SCHEMA_ID: SchemaId = SchemaId::from_array([
-    0x6e, 0x48, 0xe6, 0xad, 0xab, 0xb4, 0x93, 0xc1, 0xe2, 0x9d, 0x80, 0x18, 0xb3, 0xbb, 0xec, 0x2a,
-    0xd1, 0xee, 0x57, 0xd2, 0xa4, 0x76, 0x5b, 0x0d, 0x78, 0x00, 0xc1, 0x94, 0xc7, 0x7e, 0xed, 0xcb,
+    0xb3, 0xb9, 0xff, 0x23, 0x74, 0xaf, 0xf8, 0xbb, 0x68, 0x64, 0x92, 0x52, 0x8b, 0x17, 0x6f, 0x1c,
+    0x37, 0x3a, 0x85, 0x29, 0xe7, 0x9d, 0x7f, 0xb8, 0x69, 0x59, 0x65, 0x91, 0x9f, 0x97, 0x25, 0xa7,
 ]);
 
 fn cfa_standard_types() -> StandardTypes { StandardTypes::with(rgb_contract_stl()) }
@@ -58,8 +57,6 @@ pub fn cfa_schema() -> Schema {
         ffv: zero!(),
         flags: none!(),
         name: tn!("CollectibleFungibleAsset"),
-        timestamp: 1713343888,
-        developer: Identity::from(LNPBP_IDENTITY),
         meta_types: none!(),
         global_types: tiny_bmap! {
             GS_ART => GlobalDetails {

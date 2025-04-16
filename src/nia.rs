@@ -37,17 +37,17 @@ use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, StandardTypes};
 use rgbstd::validation::Scripts;
 use rgbstd::vm::opcodes::INSTR_SVS;
 use rgbstd::vm::RgbIsa;
-use rgbstd::{rgbasm, Amount, Identity, SchemaId, TransitionDetails};
+use rgbstd::{rgbasm, Amount, SchemaId, TransitionDetails};
 use strict_types::TypeSystem;
 
 use crate::{
     ERRNO_ISSUED_MISMATCH, ERRNO_NON_EQUAL_IN_OUT, GS_ISSUED_SUPPLY, GS_NOMINAL, GS_TERMS,
-    LNPBP_IDENTITY, OS_ASSET, TS_TRANSFER,
+    OS_ASSET, TS_TRANSFER,
 };
 
 pub const NIA_SCHEMA_ID: SchemaId = SchemaId::from_array([
-    0x1e, 0x73, 0x95, 0x52, 0x32, 0xbc, 0x22, 0x0a, 0x43, 0x02, 0x98, 0x08, 0xa0, 0x75, 0x66, 0x32,
-    0x58, 0x63, 0x6e, 0x90, 0xdd, 0x37, 0x16, 0x5b, 0x5a, 0xa3, 0xf0, 0xaa, 0xc8, 0xbf, 0xfd, 0xa8,
+    0x84, 0xed, 0x4d, 0xc7, 0xf1, 0xe0, 0x07, 0x58, 0x1c, 0xb5, 0x17, 0xd1, 0xc7, 0x25, 0xed, 0x98,
+    0x95, 0x6d, 0x82, 0x22, 0x0c, 0x4b, 0xe4, 0xf3, 0xa8, 0xb7, 0xba, 0xd5, 0x20, 0x4f, 0x7c, 0xb4,
 ]);
 
 pub(crate) fn nia_lib() -> Lib {
@@ -97,8 +97,6 @@ fn nia_schema() -> Schema {
         ffv: zero!(),
         flags: none!(),
         name: tn!("NonInflatableAsset"),
-        timestamp: 1713343888,
-        developer: Identity::from(LNPBP_IDENTITY),
         meta_types: none!(),
         global_types: tiny_bmap! {
             GS_NOMINAL => GlobalDetails {
@@ -277,7 +275,7 @@ mod test {
 
         assert_eq!(
             contract.contract_id().to_string(),
-            s!("rgb:T2ICjwk3-YuQi5vG-0CCiXIB-iX$KLl2-VRvdOd5-UKcUvBI")
+            s!("rgb:m5NaVzfP-XlQqKvK-FLAnZy1-VK$HEdS-Uy0bQC0-sRh!Xmk")
         );
     }
 }

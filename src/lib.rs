@@ -35,8 +35,6 @@ pub use pfa::{PermissionedFungibleAsset, PfaWrapper, PFA_SCHEMA_ID};
 use rgbstd::{AssignmentType, GlobalStateType, TransitionType};
 pub use uda::{UdaWrapper, UniqueDigitalAsset, UDA_SCHEMA_ID};
 
-pub const LNPBP_IDENTITY: &str = "ssi:LZS1ux-gjD9nXPF-OcetUUkW-6r3uSCS6-aQhs9W5f-8JE7w";
-
 pub const GS_ART: GlobalStateType = GlobalStateType::with(3000);
 pub const GS_ATTACH: GlobalStateType = GlobalStateType::with(2104);
 pub const GS_DETAILS: GlobalStateType = GlobalStateType::with(3004);

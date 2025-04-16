@@ -36,17 +36,17 @@ use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, StandardTypes, Tok
 use rgbstd::validation::Scripts;
 use rgbstd::vm::opcodes::INSTR_LDG;
 use rgbstd::vm::RgbIsa;
-use rgbstd::{rgbasm, GlobalDetails, Identity, OwnedStateSchema, SchemaId, TransitionDetails};
+use rgbstd::{rgbasm, GlobalDetails, OwnedStateSchema, SchemaId, TransitionDetails};
 use strict_types::TypeSystem;
 
 use crate::{
     ERRNO_NON_EQUAL_IN_OUT, ERRNO_NON_FRACTIONAL, GS_ATTACH, GS_NOMINAL, GS_TERMS, GS_TOKENS,
-    LNPBP_IDENTITY, OS_ASSET, TS_TRANSFER,
+    OS_ASSET, TS_TRANSFER,
 };
 
 pub const UDA_SCHEMA_ID: SchemaId = SchemaId::from_array([
-    0x04, 0xb9, 0x99, 0x0e, 0xe3, 0x70, 0xb5, 0xf0, 0x74, 0x8a, 0x28, 0xe2, 0xd7, 0x49, 0xab, 0x62,
-    0xbf, 0x82, 0x1b, 0x45, 0x90, 0x3a, 0xb6, 0x2b, 0x36, 0xfa, 0xfa, 0x53, 0xed, 0x23, 0x2e, 0x9e,
+    0x7e, 0x5c, 0x0f, 0x41, 0xc7, 0x5e, 0xf9, 0x3f, 0x21, 0x35, 0x3c, 0xf9, 0x0f, 0xbd, 0x53, 0x23,
+    0x98, 0x30, 0x6e, 0x25, 0x05, 0x66, 0x52, 0x9e, 0x70, 0x61, 0xa4, 0x03, 0x22, 0x43, 0x7d, 0x00,
 ]);
 
 pub const FN_GENESIS_OFFSET: u16 = 4 + 4 + 3;
@@ -120,8 +120,6 @@ fn uda_schema() -> Schema {
         ffv: zero!(),
         flags: none!(),
         name: tn!("UniqueDigitalAsset"),
-        timestamp: 1713343888,
-        developer: Identity::from(LNPBP_IDENTITY),
         meta_types: none!(),
         global_types: tiny_bmap! {
             GS_NOMINAL => GlobalDetails {

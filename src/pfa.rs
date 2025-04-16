@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-// Written in 2023-2024 by
-//     Dr Maxim Orlovsky <orlovsky@lnp-bp.org>
+// Written in 2025 by
+//     Zoe Faltibà <zoefaltiba@gmail.com>
 //
-// Copyright (C) 2023-2024 LNP/BP Standards Association. All rights reserved.
+// Copyright (C) 2025 LNP/BP Standards Association. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,17 +35,17 @@ use rgbstd::schema::{
 use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, StandardTypes};
 use rgbstd::validation::Scripts;
 use rgbstd::vm::RgbIsa;
-use rgbstd::{rgbasm, Amount, Identity, SchemaId, TransitionDetails};
+use rgbstd::{rgbasm, Amount, SchemaId, TransitionDetails};
 use strict_types::TypeSystem;
 
 use crate::{
     ERRNO_INVALID_SIGNATURE, ERRNO_ISSUED_MISMATCH, ERRNO_MISSING_PUBKEY, ERRNO_NON_EQUAL_IN_OUT,
-    GS_ISSUED_SUPPLY, GS_NOMINAL, GS_PUBKEY, GS_TERMS, LNPBP_IDENTITY, OS_ASSET, TS_TRANSFER,
+    GS_ISSUED_SUPPLY, GS_NOMINAL, GS_PUBKEY, GS_TERMS, OS_ASSET, TS_TRANSFER,
 };
 
 pub const PFA_SCHEMA_ID: SchemaId = SchemaId::from_array([
-    0xb0, 0xc6, 0x7e, 0x06, 0xed, 0x34, 0xc0, 0xe4, 0xd8, 0xe5, 0x71, 0x93, 0x2e, 0x3e, 0x0c, 0x96,
-    0xbf, 0xcb, 0x42, 0x5e, 0x64, 0x14, 0xbe, 0xd0, 0x1e, 0x8f, 0xce, 0xb5, 0x95, 0xc3, 0x59, 0x98,
+    0xce, 0x86, 0x9f, 0xe5, 0x4e, 0x15, 0x09, 0xf7, 0x25, 0xd4, 0x19, 0x27, 0xf0, 0xf2, 0xa7, 0xb7,
+    0x50, 0x80, 0xf1, 0x5e, 0xf6, 0x75, 0x59, 0xc7, 0x4b, 0x51, 0xf2, 0x04, 0x41, 0x23, 0x71, 0x21,
 ]);
 
 pub(crate) fn pfa_lib_transition() -> Lib {
@@ -98,8 +98,6 @@ fn pfa_schema() -> Schema {
         ffv: zero!(),
         flags: none!(),
         name: tn!("PermissionedFungibleAsset"),
-        timestamp: 1713343888,
-        developer: Identity::from(LNPBP_IDENTITY),
         meta_types: none!(),
         global_types: tiny_bmap! {
             GS_NOMINAL => GlobalDetails {
