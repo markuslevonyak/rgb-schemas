@@ -20,8 +20,8 @@ required-features = ["fs"]
 name = "schemata"
 
 [dependencies]
-amplify = "4.7.0"
-strict_types = "~2.7.2"
+amplify = "4.8.0"
+strict_types = "~2.8.3"
 aluvm = "0.11.0"
 bp-core = "0.11.1-alpha.1"
 rgb-std = { version = "0.11.1-alpha.1", features = ["fs"] }
