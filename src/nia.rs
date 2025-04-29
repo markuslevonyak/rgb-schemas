@@ -254,7 +254,7 @@ mod test {
             654321,
         ));
 
-        let builder = ContractBuilder::deterministic(
+        let builder = ContractBuilder::with(
             Identity::default(),
             NonInflatableAsset::schema(),
             NonInflatableAsset::types(),
@@ -270,7 +270,7 @@ mod test {
         .add_fungible_state("assetOwner", BuilderSeal::from(seal), issued_supply)
         .unwrap();
 
-        let contract = builder.issue_contract_det(created_at).unwrap();
+        let contract = builder.issue_contract_raw(created_at).unwrap();
 
         assert_eq!(
             contract.contract_id().to_string(),
