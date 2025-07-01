@@ -734,9 +734,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "rgb-core"
-version = "0.11.1-alpha.3+unreviewed"
-source = "git+https://github.com/zoedberg/rgb-core?branch=0.11.1-4#e9b05f394f9d185ff9cbe651e81f4c82370e8c37"
+name = "rgb-consensus"
+version = "0.11.1-rc.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "523a76741ed93954f5132cede3135e9601aa27fb5eeab0b896f75c4406b88d60"
 dependencies = [
  "aluvm",
  "amplify",
@@ -755,9 +756,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "rgb-invoice"
-version = "0.11.1-alpha.3+unreviewed"
-source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-4#ac1d2bfc793cc70c50309b82cb9438181ecd2ffd"
+name = "rgb-invoicing"
+version = "0.11.1-rc.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7e28971552e8fda2727dc124392ba8b38b4970b569dce4584340a07b438d8ba4"
 dependencies = [
  "amplify",
  "baid64",
@@ -768,31 +770,17 @@ dependencies = [
  "indexmap",
  "percent-encoding",
  "rand 0.9.1",
- "rgb-core",
+ "rgb-consensus",
  "serde",
  "strict_encoding",
  "strict_types",
 ]
 
 [[package]]
-name = "rgb-schemata"
-version = "0.11.1-alpha.2+unreviewed"
-dependencies = [
- "aluvm",
- "amplify",
- "bp-core",
- "rgb-std",
- "serde",
- "serde_json",
- "serde_yaml",
- "sha2",
- "strict_types",
-]
-
-[[package]]
-name = "rgb-std"
-version = "0.11.1-alpha.3+unreviewed"
-source = "git+https://github.com/zoedberg/rgb-std?branch=0.11.1-4#ac1d2bfc793cc70c50309b82cb9438181ecd2ffd"
+name = "rgb-ops"
+version = "0.11.1-rc.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "986bc232eb1c3b82ec94a105ba49a0a969c50f884906e8602820268238317457"
 dependencies = [
  "aluvm",
  "amplify",
@@ -806,12 +794,27 @@ dependencies = [
  "indexmap",
  "nonasync",
  "rand 0.9.1",
- "rgb-core",
- "rgb-invoice",
+ "rgb-consensus",
+ "rgb-invoicing",
  "serde",
  "strict_encoding",
  "strict_types",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "rgb-schemas"
+version = "0.11.1-alpha.2+unreviewed"
+dependencies = [
+ "aluvm",
+ "amplify",
+ "bp-core",
+ "rgb-ops",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "sha2",
+ "strict_types",
 ]
 
 [[package]]

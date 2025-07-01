@@ -1,4 +1,4 @@
-// RGB schemata by LNP/BP Standards Association
+// RGB schemas
 //
 // SPDX-License-Identifier: Apache-2.0
 //

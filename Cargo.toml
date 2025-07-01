@@ -1,19 +1,19 @@
 [package]
-name = "rgb-schemata"
+name = "rgb-schemas"
 version = "0.11.1-alpha.2+unreviewed"
 description = "Collection of the official RGB smart contract schemata"
 keywords = ["bitcoin", "lightning", "rgb", "smart-contracts", "lnp-bp"]
 categories = ["cryptography::cryptocurrencies"]
-authors = ["Dr Maxim Orlovsky <orlovsky@lnp-bp.org>"]
-homepage = "https://github.com/RGB-WG"
-repository = "https://github.com/RGB-WG/rgb-schemata"
+authors = ["Zoe Faltibà <zoefaltiba@gmail.com>"]
+homepage = "https://rgb.info"
+repository = "https://github.com/rgb-protocol/rgb-schemas"
 rust-version = "1.81.0"
 edition = "2021"
 license = "Apache-2.0"
 readme = "README.md"
 
 [[bin]]
-name = "rgb-schemata"
+name = "rgb-schemas"
 required-features = ["fs"]
 
 [lib]
@@ -24,10 +24,10 @@ amplify = "4.8.0"
 strict_types = "~2.8.3"
 aluvm = "0.11.1-alpha.2"
 bp-core = "0.11.1-alpha.2"
-rgb-std = { version = "0.11.1-alpha.2", features = ["fs"] }
+rgb-ops = { version = "0.11.1-rc.1", features = ["fs"] }
 
 [dev-dependencies]
-rgb-std = { version = "0.11.1-alpha.2", features = ["fs", "serde"] }
+rgb-ops = { version = "0.11.1-rc.1", features = ["fs", "serde"] }
 serde = "1.0"
 serde_json = "1.0"
 serde_yaml = "0.9.33"
@@ -37,8 +37,4 @@ sha2 = "0.10.8"
 default = []
 all = ["log", "fs"]
 log = ["aluvm/log"]
-fs = ["rgb-std/fs"]
-
-[patch.crates-io]
-rgb-core = { git = "https://github.com/zoedberg/rgb-core", branch = "0.11.1-4" }
-rgb-std = { git = "https://github.com/zoedberg/rgb-std", branch = "0.11.1-4" }
+fs = ["rgb-ops/fs"]
