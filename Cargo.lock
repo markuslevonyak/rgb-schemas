@@ -804,7 +804,7 @@ dependencies = [
 
 [[package]]
 name = "rgb-schemas"
-version = "0.11.1-rc.2"
+version = "0.11.1-rc.3"
 dependencies = [
  "aluvm",
  "amplify",
