@@ -71,19 +71,13 @@ pub const ERRNO_INFLATION_MISMATCH: u8 = 30;
 pub const ERRNO_INFLATION_EXCEEDS_ALLOWANCE: u8 = 31;
 
 pub mod dumb {
-    use bp::Tx;
-    use rgbstd::validation::{ResolveWitness, WitnessResolverError};
-    use rgbstd::vm::WitnessOrd;
+    use rgbstd::validation::{ResolveWitness, WitnessResolverError, WitnessStatus};
     use rgbstd::{ChainNet, Txid};
 
     pub struct NoResolver;
 
     impl ResolveWitness for NoResolver {
-        fn resolve_pub_witness(&self, _: Txid) -> Result<Tx, WitnessResolverError> {
-            unreachable!()
-        }
-
-        fn resolve_pub_witness_ord(&self, _: Txid) -> Result<WitnessOrd, WitnessResolverError> {
+        fn resolve_witness(&self, _: Txid) -> Result<WitnessStatus, WitnessResolverError> {
             unreachable!()
         }
 
