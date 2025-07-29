@@ -42,14 +42,14 @@ use strict_types::TypeSystem;
 
 use crate::{
     ERRNO_INFLATION_EXCEEDS_ALLOWANCE, ERRNO_INFLATION_MISMATCH, ERRNO_ISSUED_MISMATCH,
-    ERRNO_NON_EQUAL_IN_OUT, GS_ISSUED_SUPPLY, GS_MAX_SUPPLY, GS_NOMINAL, GS_OPID_REJECT_URL,
-    GS_TERMS, MS_ALLOWED_INFLATION, OS_ASSET, OS_INFLATION, OS_REPLACE, TS_BURN, TS_INFLATION,
-    TS_REPLACE, TS_TRANSFER,
+    ERRNO_NON_EQUAL_IN_OUT, ERRNO_REPLACE_HIDDEN_BURN, ERRNO_REPLACE_NO_INPUT, GS_ISSUED_SUPPLY,
+    GS_MAX_SUPPLY, GS_NOMINAL, GS_OPID_REJECT_URL, GS_TERMS, MS_ALLOWED_INFLATION, OS_ASSET,
+    OS_INFLATION, OS_REPLACE, TS_BURN, TS_INFLATION, TS_REPLACE, TS_TRANSFER,
 };
 
 pub const IFA_SCHEMA_ID: SchemaId = SchemaId::from_array([
-    0x6e, 0x80, 0x49, 0x7c, 0x88, 0x47, 0x62, 0x61, 0x51, 0x16, 0xf7, 0x8d, 0x17, 0x94, 0x2f, 0x9b,
-    0x2b, 0xe0, 0x0d, 0x58, 0x77, 0x4f, 0x91, 0xa2, 0x72, 0xa8, 0x3a, 0x03, 0xff, 0x9c, 0xcd, 0xf6,
+    0x1f, 0x8c, 0xd9, 0xf6, 0x97, 0xd7, 0x93, 0x2a, 0x6d, 0xa6, 0xcc, 0x6c, 0x8d, 0x31, 0x2c, 0x4d,
+    0x42, 0x87, 0x60, 0x13, 0xd5, 0x79, 0x51, 0x73, 0x1c, 0xb7, 0x74, 0x46, 0xff, 0x55, 0xf3, 0x01,
 ]);
 
 pub(crate) fn ifa_lib_genesis() -> Lib {
@@ -93,23 +93,21 @@ pub(crate) fn ifa_lib_transfer() -> Lib {
         // Replace rights validation
         cnp     OS_REPLACE,a16[0];  // count input replace rights
         cns     OS_REPLACE,a16[1];  // count output replace rights
-
         // Check if input count is 0
-        put     a16[2],0;
+        put     a16[2],0;  // store 0 in a16[2]
         eq.n    a16[0],a16[2];  // check if input_count == 0
-        jif     39;  // jump to 0x27 if input_count == 0
-
-        // Input count > 0, check that output count > 0
-        put     a16[2],0;
-        gt.u    a16[1],a16[2];  // check if output_count > 0
-        test;  // fail if output_count == 0
+        // TODO: fix comment
+        jif     40;  // jump to 0x28 if input_count == 0
+        // Input count > 0, check that output count >= input count
+        put     a8[0],ERRNO_REPLACE_HIDDEN_BURN;  // set errno
+        lt.u    a16[1],a16[0];  // output_count < input_count
+        inv     st0;  // output_count >= input_count
+        test;  // fail if output_count < input_count
         ret;  // return execution flow
-
-        // 0x27: Input count is 0, output count must also be 0
-        put     a16[2],0;
-        eq.n    a16[1],a16[2];  // check if output_count == 0
-        test;  // fail if output_count != 0
-
+        // 0x28: Input count is 0, output count must also be 0
+        put     a8[0],ERRNO_REPLACE_NO_INPUT;  // set errno
+        eq.n    a16[1],a16[0];  // check if output_count == input_count
+        test;  // fail if output_count != input_count (=0)
         ret;  // return execution flow
     };
     Lib::assemble::<Instr<RgbIsa<MemContract>>>(&code).expect("wrong transfer validation script")
