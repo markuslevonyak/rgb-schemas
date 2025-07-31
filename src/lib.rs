@@ -39,7 +39,7 @@ pub use uda::{UdaWrapper, UniqueDigitalAsset, UDA_SCHEMA_ID};
 
 pub const GS_ART: GlobalStateType = GlobalStateType::with(3000);
 pub const GS_ATTACH: GlobalStateType = GlobalStateType::with(2104);
-pub const GS_OPID_REJECT_URL: GlobalStateType = GlobalStateType::with(2012);
+pub const GS_REJECT_LIST_URL: GlobalStateType = GlobalStateType::with(2012);
 pub const GS_DETAILS: GlobalStateType = GlobalStateType::with(3004);
 pub const GS_ENGRAVINGS: GlobalStateType = GlobalStateType::with(2103);
 pub const GS_ISSUED_SUPPLY: GlobalStateType = GlobalStateType::with(2010);

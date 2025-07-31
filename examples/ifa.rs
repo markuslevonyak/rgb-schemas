@@ -4,7 +4,7 @@ use rgbstd::containers::{ConsignmentExt, FileContent, Kit};
 use rgbstd::contract::{FilterIncludeAll, FungibleAllocation, IssuerWrapper};
 use rgbstd::invoice::Precision;
 use rgbstd::persistence::Stock;
-use rgbstd::stl::{AssetSpec, ContractTerms, OpidRejectUrl, RicardianContract};
+use rgbstd::stl::{AssetSpec, ContractTerms, RejectListUrl, RicardianContract};
 use rgbstd::{Amount, ChainNet, GenesisSeal};
 use schemata::dumb::NoResolver;
 use schemata::InflatableFungibleAsset;
@@ -27,7 +27,7 @@ fn main() {
 
     let max_supply = Amount::from(150000u64);
 
-    let opid_reject_url = OpidRejectUrl::from("example.xyz/opidReject");
+    let reject_list_url = RejectListUrl::from("example.xyz/reject");
 
     let mut stock = Stock::in_memory();
     let kit = Kit::load_file("schemata/InflatableFungibleAsset.rgb")
@@ -51,8 +51,8 @@ fn main() {
         .expect("invalid issued supply")
         .add_global_state("maxSupply", max_supply)
         .expect("invalid max supply")
-        .add_global_state("opidRejectUrl", opid_reject_url)
-        .expect("invalid opid reject url")
+        .add_global_state("rejectListUrl", reject_list_url)
+        .expect("invalid reject list url")
         .add_fungible_state("assetOwner", beneficiary_1, issued_supply.value())
         .expect("invalid fungible state")
         .add_fungible_state(

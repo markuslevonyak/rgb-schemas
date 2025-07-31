@@ -34,7 +34,7 @@ use rgbstd::schema::{
     AssignmentDetails, FungibleType, GenesisSchema, GlobalStateSchema, Occurrences,
     OwnedStateSchema, Schema, TransitionSchema,
 };
-use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, OpidRejectUrl, StandardTypes};
+use rgbstd::stl::{rgb_contract_stl, AssetSpec, ContractTerms, RejectListUrl, StandardTypes};
 use rgbstd::validation::Scripts;
 use rgbstd::vm::RgbIsa;
 use rgbstd::{rgbasm, Amount, GlobalDetails, MetaDetails, SchemaId, TransitionDetails};
@@ -43,13 +43,13 @@ use strict_types::TypeSystem;
 use crate::{
     ERRNO_INFLATION_EXCEEDS_ALLOWANCE, ERRNO_INFLATION_MISMATCH, ERRNO_ISSUED_MISMATCH,
     ERRNO_NON_EQUAL_IN_OUT, ERRNO_REPLACE_HIDDEN_BURN, ERRNO_REPLACE_NO_INPUT, GS_ISSUED_SUPPLY,
-    GS_MAX_SUPPLY, GS_NOMINAL, GS_OPID_REJECT_URL, GS_TERMS, MS_ALLOWED_INFLATION, OS_ASSET,
+    GS_MAX_SUPPLY, GS_NOMINAL, GS_REJECT_LIST_URL, GS_TERMS, MS_ALLOWED_INFLATION, OS_ASSET,
     OS_INFLATION, OS_REPLACE, TS_BURN, TS_INFLATION, TS_REPLACE, TS_TRANSFER,
 };
 
 pub const IFA_SCHEMA_ID: SchemaId = SchemaId::from_array([
-    0x1f, 0x8c, 0xd9, 0xf6, 0x97, 0xd7, 0x93, 0x2a, 0x6d, 0xa6, 0xcc, 0x6c, 0x8d, 0x31, 0x2c, 0x4d,
-    0x42, 0x87, 0x60, 0x13, 0xd5, 0x79, 0x51, 0x73, 0x1c, 0xb7, 0x74, 0x46, 0xff, 0x55, 0xf3, 0x01,
+    0x82, 0x65, 0x7f, 0x89, 0x08, 0x2f, 0x06, 0x27, 0x64, 0xdc, 0x04, 0x7c, 0xbb, 0xff, 0xad, 0x94,
+    0x2a, 0x82, 0x30, 0xc0, 0x41, 0xbc, 0xa3, 0x16, 0x43, 0x05, 0xba, 0x24, 0xc5, 0x95, 0xb4, 0x60,
 ]);
 
 pub(crate) fn ifa_lib_genesis() -> Lib {
@@ -180,9 +180,9 @@ fn ifa_schema() -> Schema {
                 global_state_schema: GlobalStateSchema::once(types.get("RGBContract.Amount")),
                 name: fname!("maxSupply"),
             },
-            GS_OPID_REJECT_URL => GlobalDetails {
-                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.OpidRejectUrl")),
-                name: fname!("opidRejectUrl"),
+            GS_REJECT_LIST_URL => GlobalDetails {
+                global_state_schema: GlobalStateSchema::once(types.get("RGBContract.RejectListUrl")),
+                name: fname!("rejectListUrl"),
             },
         },
         owned_types: tiny_bmap! {
@@ -209,7 +209,7 @@ fn ifa_schema() -> Schema {
                 GS_TERMS => Occurrences::Once,
                 GS_ISSUED_SUPPLY => Occurrences::Once,
                 GS_MAX_SUPPLY => Occurrences::Once,
-                GS_OPID_REJECT_URL => Occurrences::NoneOrOnce,
+                GS_REJECT_LIST_URL => Occurrences::NoneOrOnce,
             },
             assignments: tiny_bmap! {
                 OS_ASSET => Occurrences::NoneOrMore,
@@ -347,11 +347,11 @@ impl<S: ContractStateRead> IfaWrapper<S> {
         ContractTerms::from_strict_val_unchecked(strict_val)
     }
 
-    pub fn opid_reject_url(&self) -> Option<OpidRejectUrl> {
+    pub fn reject_list_url(&self) -> Option<RejectListUrl> {
         self.0
-            .global("opidRejectUrl")
+            .global("rejectListUrl")
             .next()
-            .map(|strict_val| OpidRejectUrl::from_strict_val_unchecked(&strict_val))
+            .map(|strict_val| RejectListUrl::from_strict_val_unchecked(&strict_val))
     }
 
     pub fn total_issued_supply(&self) -> Amount {

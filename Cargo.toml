@@ -38,3 +38,6 @@ default = []
 all = ["log", "fs"]
 log = ["aluvm/log"]
 fs = ["rgb-ops/fs"]
+
+[patch.crates-io]
+rgb-ops = { git = "https://github.com/rgb-protocol/rgb-ops", branch = "master" }
