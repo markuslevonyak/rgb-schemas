@@ -354,12 +354,15 @@ impl<S: ContractStateRead> IfaWrapper<S> {
             .map(|strict_val| RejectListUrl::from_strict_val_unchecked(&strict_val))
     }
 
-    pub fn total_issued_supply(&self) -> Amount {
+    fn issued_supply(&self) -> impl Iterator<Item = Amount> + '_ {
         self.0
             .global("issuedSupply")
             .map(|amount| Amount::from_strict_val_unchecked(&amount))
-            .sum()
     }
+
+    pub fn total_issued_supply(&self) -> Amount { self.issued_supply().sum() }
+
+    pub fn issuance_amounts(&self) -> Vec<Amount> { self.issued_supply().collect::<Vec<_>>() }
 
     pub fn max_supply(&self) -> Amount {
         self.0
