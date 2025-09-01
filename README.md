@@ -1,8 +1,8 @@
 # RGB Schemas
 
-![Build](https://github.com/rgb-protocol/rgb-schemas/workflows/Build/badge.svg)
-![Tests](https://github.com/rgb-protocol/rgb-schemas/workflows/Tests/badge.svg)
-![Lints](https://github.com/rgb-protocol/rgb-schemas/workflows/Lints/badge.svg)
+[![Build](https://github.com/rgb-protocol/rgb-schemas/actions/workflows/build.yml/badge.svg)](https://github.com/rgb-protocol/rgb-schemas/actions/workflows/build.yml)
+[![Tests](https://github.com/rgb-protocol/rgb-schemas/actions/workflows/test.yml/badge.svg)](https://github.com/rgb-protocol/rgb-schemas/actions/workflows/test.yml)
+[![Lints](https://github.com/rgb-protocol/rgb-schemas/actions/workflows/lint.yml/badge.svg)](https://github.com/rgb-protocol/rgb-schemas/actions/workflows/lint.yml)
 
 [![crates.io](https://img.shields.io/crates/v/rgb-schemas)](https://crates.io/crates/rgb-schemas)
 [![Docs](https://docs.rs/rgb-schemas/badge.svg)](https://docs.rs/rgb-schemas)
