@@ -41,7 +41,7 @@ This repository provides the following RGB schemata:
 
 ## License
 
-See [LICENCE](LICENSE) file.
+See [LICENSE](LICENSE) file.
 
 
 [Site]: https://rgb.info
