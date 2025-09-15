@@ -1,17 +1,18 @@
-use amplify::hex::FromHex;
-use bp::{CompressedPk, Txid};
+use std::str::FromStr;
+
+use rgbstd::bitcoin::CompressedPublicKey;
 use rgbstd::containers::{ConsignmentExt, FileContent, Kit};
 use rgbstd::contract::{FilterIncludeAll, FungibleAllocation, IssuerWrapper};
 use rgbstd::invoice::Precision;
 use rgbstd::persistence::Stock;
 use rgbstd::stl::{AssetSpec, ContractTerms, RicardianContract};
-use rgbstd::{Amount, ChainNet, GenesisSeal};
+use rgbstd::{Amount, ChainNet, GenesisSeal, Txid};
 use schemata::dumb::NoResolver;
 use schemata::PermissionedFungibleAsset;
 
 fn main() {
     let beneficiary_txid =
-        Txid::from_hex("14295d5bb1a191cdb6286dc0944df938421e3dfcbf0811353ccac4100c2068c5").unwrap();
+        Txid::from_str("14295d5bb1a191cdb6286dc0944df938421e3dfcbf0811353ccac4100c2068c5").unwrap();
     let beneficiary = GenesisSeal::new_random(beneficiary_txid, 1);
 
     let spec = AssetSpec::new("TEST", "Test asset", Precision::CentiMicro);
@@ -23,7 +24,7 @@ fn main() {
 
     let issued_supply = Amount::from(100000u64);
 
-    let pubkey = CompressedPk::from_byte_array([
+    let pubkey = CompressedPublicKey::from_slice(&[
         2, 199, 163, 211, 116, 75, 108, 119, 241, 66, 54, 236, 233, 189, 142, 108, 37, 135, 56,
         128, 200, 176, 199, 9, 117, 132, 72, 200, 167, 185, 4, 64, 53,
     ])

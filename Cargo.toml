@@ -20,14 +20,16 @@ required-features = ["fs"]
 name = "schemata"
 
 [dependencies]
-amplify = "4.8.0"
-strict_types = "~2.8.3"
-aluvm = "0.11.1-alpha.2"
-bp-core = "0.11.1-alpha.2"
-rgb-ops = { version = "0.11.1-rc.5", features = ["fs"] }
+amplify = "=4.8.1"
+rgb-strict-types = "~1.0.0"
+rgb-aluvm = "0.11.1-rc.1"
+rgb-ops = { version = "0.11.1-rc.7", features = ["fs"] }
 
 [dev-dependencies]
-rgb-ops = { version = "0.11.1-rc.5", features = ["fs", "serde"] }
+rgb-ops = { version = "0.11.1-rc.7", features = [
+    "fs",
+    "serde",
+] }
 serde = "1.0"
 serde_json = "1.0"
 serde_yaml = "0.9.33"
@@ -35,6 +37,13 @@ sha2 = "0.10.8"
 
 [features]
 default = []
-all = ["log", "fs"]
-log = ["aluvm/log"]
-fs = ["rgb-ops/fs"]
+all = [
+    "log",
+    "fs",
+]
+log = [
+    "rgb-aluvm/log",
+]
+fs = [
+    "rgb-ops/fs",
+]

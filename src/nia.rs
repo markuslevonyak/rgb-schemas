@@ -216,12 +216,11 @@ impl<S: ContractStateRead> NiaWrapper<S> {
 mod test {
     use std::str::FromStr;
 
-    use bp::seals::txout::BlindSeal;
-    use bp::Txid;
     use rgbstd::containers::{BuilderSeal, ConsignmentExt};
     use rgbstd::contract::*;
     use rgbstd::invoice::Precision;
     use rgbstd::stl::*;
+    use rgbstd::txout::BlindSeal;
     use rgbstd::*;
 
     use super::*;

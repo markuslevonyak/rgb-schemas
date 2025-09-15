@@ -1,9 +1,8 @@
 use std::fs;
+use std::str::FromStr;
 
 use amplify::confinement::SmallBlob;
-use amplify::hex::FromHex;
 use amplify::{Bytes, Wrapper};
-use bp::Txid;
 use rgbstd::containers::{ConsignmentExt, FileContent, Kit};
 use rgbstd::contract::{DataAllocation, FilterIncludeAll, IssuerWrapper};
 use rgbstd::invoice::Precision;
@@ -11,14 +10,14 @@ use rgbstd::persistence::Stock;
 use rgbstd::stl::{
     AssetSpec, Attachment, ContractTerms, EmbeddedMedia, MediaType, RicardianContract, TokenData,
 };
-use rgbstd::{Allocation, ChainNet, GenesisSeal, TokenIndex};
+use rgbstd::{Allocation, ChainNet, GenesisSeal, TokenIndex, Txid};
 use schemata::dumb::NoResolver;
 use schemata::UniqueDigitalAsset;
 use sha2::{Digest, Sha256};
 
 fn main() {
     let beneficiary_txid =
-        Txid::from_hex("14295d5bb1a191cdb6286dc0944df938421e3dfcbf0811353ccac4100c2068c5").unwrap();
+        Txid::from_str("14295d5bb1a191cdb6286dc0944df938421e3dfcbf0811353ccac4100c2068c5").unwrap();
     let beneficiary = GenesisSeal::new_random(beneficiary_txid, 1);
 
     let spec = AssetSpec::new("TEST", "Test uda", Precision::Indivisible);

@@ -1,17 +1,17 @@
-use amplify::hex::FromHex;
-use bp::Txid;
+use std::str::FromStr;
+
 use rgbstd::containers::{ConsignmentExt, FileContent, Kit};
 use rgbstd::contract::{FilterIncludeAll, FungibleAllocation, IssuerWrapper};
 use rgbstd::invoice::Precision;
 use rgbstd::persistence::Stock;
 use rgbstd::stl::{ContractTerms, Name, RicardianContract};
-use rgbstd::{Amount, ChainNet, GenesisSeal};
+use rgbstd::{Amount, ChainNet, GenesisSeal, Txid};
 use schemata::dumb::NoResolver;
 use schemata::CollectibleFungibleAsset;
 
 fn main() {
     let beneficiary_txid =
-        Txid::from_hex("14295d5bb1a191cdb6286dc0944df938421e3dfcbf0811353ccac4100c2068c5").unwrap();
+        Txid::from_str("14295d5bb1a191cdb6286dc0944df938421e3dfcbf0811353ccac4100c2068c5").unwrap();
     let beneficiary = GenesisSeal::new_random(beneficiary_txid, 1);
 
     let name = Name::from("Test asset");
