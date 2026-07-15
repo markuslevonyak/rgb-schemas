@@ -1,28 +1,27 @@
+mod common;
+
 use std::fs;
-use std::str::FromStr;
 
 use amplify::confinement::SmallBlob;
 use amplify::{Bytes, Wrapper};
-use rgbstd::containers::{ConsignmentExt, FileContent, Kit};
+use common::{genesis_seal, stock_with_kit, BENEFICIARY_TXID, CREATED_AT};
+use rgbstd::containers::{ConsignmentExt, FileContent};
 use rgbstd::contract::{DataAllocation, FilterIncludeAll, IssuerWrapper};
 use rgbstd::invoice::Precision;
-use rgbstd::persistence::Stock;
 use rgbstd::stl::{
     AssetSpec, Attachment, ContractTerms, EmbeddedMedia, MediaType, RicardianContract, TokenData,
 };
-use rgbstd::{Allocation, ChainNet, GenesisSeal, TokenIndex, Txid};
+use rgbstd::{Allocation, ChainNet, TokenIndex, Txid};
 use schemata::dumb::NoResolver;
 use schemata::UniqueDigitalAsset;
 use sha2::{Digest, Sha256};
 
 fn main() {
-    let beneficiary_txid =
-        Txid::from_str("14295d5bb1a191cdb6286dc0944df938421e3dfcbf0811353ccac4100c2068c5").unwrap();
-    let beneficiary = GenesisSeal::new_random(beneficiary_txid, 1);
+    let beneficiary = genesis_seal(BENEFICIARY_TXID, 1, 100_001);
 
     let spec = AssetSpec::new("TEST", "Test uda", Precision::Indivisible);
 
-    let file_bytes = fs::read("README.md").unwrap();
+    let file_bytes = fs::read("LICENSE").unwrap();
     let mut hasher = Sha256::new();
     hasher.update(file_bytes);
     let file_hash = hasher.finalize();
@@ -47,12 +46,7 @@ fn main() {
 
     let allocation = Allocation::with(index, 1);
 
-    let mut stock = Stock::in_memory();
-    let kit = Kit::load_file("schemata/UniqueDigitalAsset.rgb")
-        .unwrap()
-        .validate()
-        .unwrap();
-    stock.import_kit(kit).expect("invalid issuer kit");
+    let mut stock = stock_with_kit("schemata/UniqueDigitalAsset.rgb");
 
     let contract = stock
         .contract_builder(
@@ -69,7 +63,7 @@ fn main() {
         .expect("invalid token data")
         .add_data("assetOwner", beneficiary, allocation)
         .expect("invalid asset blob")
-        .issue_contract()
+        .issue_contract_raw(CREATED_AT)
         .expect("contract doesn't fit schema requirements");
 
     let contract_id = contract.contract_id();

@@ -1,26 +1,21 @@
-use std::str::FromStr;
+mod common;
 
-use rgbstd::containers::{ConsignmentExt, FileContent, Kit};
+use common::{default_terms, genesis_seal, stock_with_kit, BENEFICIARY_TXID, CREATED_AT};
+use rgbstd::containers::{ConsignmentExt, FileContent};
 use rgbstd::contract::{FilterIncludeAll, FungibleAllocation, IssuerWrapper};
 use rgbstd::invoice::Precision;
-use rgbstd::persistence::Stock;
-use rgbstd::stl::{AssetSpec, ContractTerms, RejectListUrl, RicardianContract};
-use rgbstd::{Amount, ChainNet, GenesisSeal, Txid};
+use rgbstd::stl::{AssetSpec, RejectListUrl};
+use rgbstd::{Amount, ChainNet, Txid};
 use schemata::dumb::NoResolver;
 use schemata::InflatableFungibleAsset;
 
 fn main() {
-    let beneficiary_txid =
-        Txid::from_str("14295d5bb1a191cdb6286dc0944df938421e3dfcbf0811353ccac4100c2068c5").unwrap();
-    let beneficiary_1 = GenesisSeal::new_random(beneficiary_txid, 1);
-    let beneficiary_2 = GenesisSeal::new_random(beneficiary_txid, 2);
+    let beneficiary_1 = genesis_seal(BENEFICIARY_TXID, 1, 100_001);
+    let beneficiary_2 = genesis_seal(BENEFICIARY_TXID, 2, 100_002);
 
     let spec = AssetSpec::new("TEST", "Test asset", Precision::CentiMicro);
 
-    let terms = ContractTerms {
-        text: RicardianContract::default(),
-        media: None,
-    };
+    let terms = default_terms();
 
     let issued_supply = Amount::from(100000u64);
 
@@ -28,12 +23,7 @@ fn main() {
 
     let reject_list_url = RejectListUrl::from("example.xyz/reject");
 
-    let mut stock = Stock::in_memory();
-    let kit = Kit::load_file("schemata/InflatableFungibleAsset.rgb")
-        .unwrap()
-        .validate()
-        .unwrap();
-    stock.import_kit(kit).expect("invalid issuer kit");
+    let mut stock = stock_with_kit("schemata/InflatableFungibleAsset.rgb");
 
     let contract = stock
         .contract_builder(
@@ -60,7 +50,7 @@ fn main() {
             max_supply.value() - issued_supply.value(),
         )
         .expect("invalid fungible state")
-        .issue_contract()
+        .issue_contract_raw(CREATED_AT)
         .expect("contract doesn't fit schema requirements");
 
     let contract_id = contract.contract_id();
